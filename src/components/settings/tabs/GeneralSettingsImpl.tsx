@@ -5,7 +5,6 @@ import type { SettingsTabProps } from './types';
 
 export function GeneralSettings(props: SettingsTabProps) {
   const { formData, setFormData, handleChange, handleInstantUpdate, handleRepairCounter } = props;
-  const t = (key: string, fallback: string = key) => fallback;
   return (
     <section className="space-y-6">
       <div className="flex items-center gap-3 pb-4 border-b border-gray-50 dark:border-white/5">
@@ -26,7 +25,6 @@ export function GeneralSettings(props: SettingsTabProps) {
             setFormData={setFormData}
             handleChange={handleChange}
             handleInstantUpdate={handleInstantUpdate}
-            t={t}
           />
 
           <GeneralLocalization
@@ -34,18 +32,16 @@ export function GeneralSettings(props: SettingsTabProps) {
             setFormData={setFormData}
             handleChange={handleChange}
             handleInstantUpdate={handleInstantUpdate}
-            t={t}
           />
 
           <GeneralInvoicing
             formData={formData}
             handleChange={handleChange}
             handleRepairCounter={handleRepairCounter}
-            t={t}
           />
         </div>
 
-        <GeneralModules {...props} t={t} />
+        <GeneralModules {...props} />
       </div>
     </section>
   );

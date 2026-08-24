@@ -28,7 +28,7 @@ export function useFinancialStats(filteredSales: any[], filteredExpenses: any[],
       const customerPayments = filteredPayments
         .filter(p => p.direction === 'in' && (method === 'credit' || p.payment_type === method || p.paymentMode === method || p.paymentType === method))
         .reduce((a, x) => a + Number(x.amount || 0), 0);
-      return { method, sales, expenses, refunds, customerPayments, net: sales + customerPayments - refunds - expenses, retailSales, wholesaleSales };
+      return { method, sales, expenses, refunds, customerPayments, net: method === 'credit' ? sales - customerPayments : sales + customerPayments - refunds - expenses, retailSales, wholesaleSales };
     });
   }, [filteredSales, filteredExpenses, filteredPayments, appSettings]);
 

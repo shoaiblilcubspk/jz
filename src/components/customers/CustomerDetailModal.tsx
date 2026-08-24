@@ -104,17 +104,17 @@ export function CustomerDetailModal({ customer: initialCustomer, onClose }: Cust
               {/* Stats Grid */}
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 <div className="bg-primary/5 border border-primary/10 p-5 rounded-[1.5rem] relative overflow-hidden">
-                  <p className="text-primary/60 dark:text-emerald-400/60 text-[9px] font-black uppercase tracking-[0.2em] mb-1">{"total_spent"}</p>
+                  <p className="text-primary/60 dark:text-emerald-400/60 text-[9px] font-black uppercase tracking-[0.2em] mb-1">{"Total Spent"}</p>
                   <p className="text-xl font-black text-primary dark:text-emerald-400">{formatCurrency(totalSpent, appSettings.currency)}</p>
                   <ShoppingBag className="absolute -bottom-2 -right-2 h-12 w-12 text-primary/10" />
                 </div>
                 <div className="bg-blue-500/5 border border-blue-500/10 p-5 rounded-[1.5rem] relative overflow-hidden">
-                  <p className="text-blue-600/60 dark:text-blue-400/60 text-[9px] font-black uppercase tracking-[0.2em] mb-1">{"total_orders"}</p>
+                  <p className="text-blue-600/60 dark:text-blue-400/60 text-[9px] font-black uppercase tracking-[0.2em] mb-1">{"Total Orders"}</p>
                   <p className="text-xl font-black text-blue-600 dark:text-blue-400">{totalOrders}</p>
                   <Receipt className="absolute -bottom-2 -right-2 h-12 w-12 text-blue-500/10" />
                 </div>
                 <div className="bg-indigo-500/5 border border-indigo-500/10 p-5 rounded-[1.5rem] relative overflow-hidden">
-                  <p className="text-indigo-600/60 dark:text-indigo-400/60 text-[9px] font-black uppercase tracking-[0.2em] mb-1">{"average_sale"}</p>
+                  <p className="text-indigo-600/60 dark:text-indigo-400/60 text-[9px] font-black uppercase tracking-[0.2em] mb-1">{"Average Sale"}</p>
                   <p className="text-xl font-black text-indigo-600 dark:text-indigo-400">{formatCurrency(averageTransaction, appSettings.currency)}</p>
                   <CreditCard className="absolute -bottom-2 -right-2 h-12 w-12 text-indigo-500/10" />
                 </div>
@@ -125,7 +125,7 @@ export function CustomerDetailModal({ customer: initialCustomer, onClose }: Cust
                 <div className="space-y-4">
                   <h3 className="text-[11px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest flex items-center gap-3">
                     <span className="w-8 h-px bg-gray-200 dark:bg-white/10"></span>
-                    {"contact_info"}
+                    {"Contact Info"}
                   </h3>
                   <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-black/20 rounded-2xl border border-gray-200 dark:border-white/5">
                     <div className="flex items-center gap-4">

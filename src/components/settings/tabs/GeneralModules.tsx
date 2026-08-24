@@ -31,14 +31,14 @@ export function GeneralModules({
             <Layout className="w-5 h-5 text-violet-500" />
           </div>
           <div>
-            <h3 className="text-base font-black text-gray-900 dark:text-white uppercase tracking-tight">{t("experience", "Experience")}</h3>
-            <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-0.5">{t("experience_subtitle", "Personalize your workspace")}</p>
+            <h3 className="text-base font-black text-gray-900 dark:text-white uppercase tracking-tight">{"Experience"}</h3>
+            <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-0.5">{"Personalize your workspace"}</p>
           </div>
         </div>
 
         <div className="space-y-4">
           <div className="space-y-1.5">
-            <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("app_theme", "App Theme")}</label>
+            <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"App Theme"}</label>
             <div className="grid grid-cols-3 gap-2 bg-white dark:bg-black/25 p-1 rounded-xl border border-gray-200 dark:border-white/5">
               {(['light', 'dark', 'auto'] as const).map((tVal) => (
                 <Button
@@ -54,14 +54,14 @@ export function GeneralModules({
                     : '!text-gray-500 hover:!text-gray-900 dark:hover:!text-white'
                     }`}
                 >
-                  {tVal === 'light' ? t("theme_light", "Light") : (tVal === 'dark' ? t("theme_dark", "Dark") : tVal)}
+                  {tVal === 'light' ? "Light" : (tVal === 'dark' ? "Dark" : tVal)}
                 </Button>
               ))}
             </div>
           </div>
 
           <div className="space-y-1.5">
-            <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("interface_mode", "Interface Mode")}</label>
+            <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Interface Mode"}</label>
             <Select
               name="interfaceMode"
               value={formData.interfaceMode || 'touch'}
@@ -71,8 +71,8 @@ export function GeneralModules({
               }}
               className="!text-xs !font-bold !py-2"
             >
-              <option value="touch">{t("touch_friendly", "Touch Friendly (POS Optimized)")}</option>
-              <option value="traditional">{t("traditional", "Traditional (Keyboard Focused)")}</option>
+              <option value="touch">{"Touch Friendly (POS Optimized)"}</option>
+              <option value="traditional">{"Traditional (Keyboard Focused)"}</option>
             </Select>
           </div>
         </div>
@@ -85,8 +85,8 @@ export function GeneralModules({
             <Sliders className="w-5 h-5 text-violet-600" />
           </div>
           <div>
-            <h3 className="text-base font-black text-gray-900 dark:text-white uppercase tracking-tight">{t("system_modules", "System Modules")}</h3>
-            <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-0.5">{t("system_modules_subtitle", "Enable or disable advanced features")}</p>
+            <h3 className="text-base font-black text-gray-900 dark:text-white uppercase tracking-tight">{"System Modules"}</h3>
+            <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-0.5">{"Enable or disable advanced features"}</p>
           </div>
         </div>
 
@@ -96,8 +96,8 @@ export function GeneralModules({
             <div className="flex items-center gap-3">
               <Store className="w-4 h-4 text-gray-500 group-hover:text-violet-500 transition-colors" />
               <div>
-                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{t("retail_sales", "Retail Sales")}</span>
-                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{t("retail_sales_subtitle", "B2C direct sales")}</span>
+                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{"Retail Sales"}</span>
+                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{"B2C direct sales"}</span>
               </div>
             </div>
             <ToggleSwitch
@@ -113,8 +113,8 @@ export function GeneralModules({
             <div className="flex items-center gap-3">
               <ShoppingBag className="w-4 h-4 text-gray-500 group-hover:text-violet-500 transition-colors" />
               <div>
-                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{t("wholesale_mode", "Wholesale Mode")}</span>
-                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{t("wholesale_mode_subtitle", "Allow wholesale price tiers")}</span>
+                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{"Wholesale Mode"}</span>
+                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{"Allow wholesale price tiers"}</span>
               </div>
             </div>
             <ToggleSwitch
@@ -130,8 +130,8 @@ export function GeneralModules({
             <div className="flex items-center gap-3">
               <Keyboard className="w-4 h-4 text-gray-500 group-hover:text-violet-500 transition-colors" />
               <div>
-                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{t("touch_keyboard", "Touch Keyboard")}</span>
-                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{t("touch_keyboard_subtitle", "On-screen layout inputs")}</span>
+                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{"Touch Keyboard"}</span>
+                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{"On-screen layout inputs"}</span>
               </div>
             </div>
             <ToggleSwitch
@@ -153,8 +153,8 @@ export function GeneralModules({
                 : <VolumeX className="w-4 h-4 text-gray-500 group-hover:text-violet-500 transition-colors" />
               }
               <div>
-                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{t("sound_feedback", "Sound Feedback")}</span>
-                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{t("sound_feedback_subtitle", "Keyboard UI feedback sounds")}</span>
+                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{"Sound Feedback"}</span>
+                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{"Keyboard UI feedback sounds"}</span>
               </div>
             </div>
             <ToggleSwitch
@@ -174,8 +174,8 @@ export function GeneralModules({
             <div className="flex items-center gap-3">
               <PlusCircle className="w-4 h-4 text-gray-500 group-hover:text-violet-500 transition-colors" />
               <div>
-                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{t("enable_dc_charges", "Enable DC Charges")}</span>
-                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{t("enable_dc_charges_subtitle", "Extra packaging & delivery fees")}</span>
+                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{"Enable DC Charges"}</span>
+                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{"Extra packaging & delivery fees"}</span>
               </div>
             </div>
             <ToggleSwitch
@@ -191,8 +191,8 @@ export function GeneralModules({
             <div className="flex items-center gap-3">
               <AlertCircle className="w-4 h-4 text-gray-500 group-hover:text-amber-500 transition-colors" />
               <div>
-                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{t("allow_negative_stock", "Allow Negative Stock")}</span>
-                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{t("allow_negative_stock_subtitle", "Let sales proceed when stock is zero")}</span>
+                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{"Allow Negative Stock"}</span>
+                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{"Let sales proceed when stock is zero"}</span>
               </div>
             </div>
             <ToggleSwitch
@@ -208,8 +208,8 @@ export function GeneralModules({
             <div className="flex items-center gap-3">
               <ShieldCheck className="w-4 h-4 text-gray-500 group-hover:text-emerald-500 transition-colors" />
               <div className="min-w-0">
-                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{t("refund_approval_threshold", "Refund Approval Threshold")}</span>
-                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{t("refund_approval_threshold_subtitle", "Refunds above this need admin approval (0 = off)")}</span>
+                <span className="text-xs font-bold text-gray-700 dark:text-gray-300 block leading-none">{"Refund Approval Threshold"}</span>
+                <span className="text-[8px] text-gray-500 uppercase tracking-wider block mt-1">{"Refunds above this need admin approval (0 = off)"}</span>
               </div>
             </div>
             <input

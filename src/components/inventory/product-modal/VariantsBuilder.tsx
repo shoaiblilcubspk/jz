@@ -17,7 +17,7 @@ export function VariantsBuilder({ formData, _setFormData, variants, setVariants,
     <div className="space-y-3 p-4 bg-gray-50 dark:bg-surface rounded-2xl border border-gray-200 dark:border-white/5 animate-in fade-in zoom-in-95">
       <div className="flex items-center justify-between">
         <div>
-          <h4 className="text-xs font-black text-gray-900 dark:text-white uppercase">{"product_variants"}</h4>
+          <h4 className="text-xs font-black text-gray-900 dark:text-white uppercase">{"Product Variants"}</h4>
           <p className="text-[9px] text-gray-600 uppercase font-bold tracking-widest">Size, Color, Material (e.g. Garments, Shoes)</p>
         </div>
         <Button
@@ -27,7 +27,7 @@ export function VariantsBuilder({ formData, _setFormData, variants, setVariants,
           onClick={() => setVariants([...variants, { name: '', options: [], optionsRaw: '' }])}
           className="!min-h-0 !px-3 !py-1.5 !rounded-lg !text-[10px] !font-black !bg-white dark:!bg-black !border-gray-200 dark:!border-white/10 !text-primary hover:!border-primary"
         >
-          {"add_variant_option"}
+          {"Add Variant Option"}
         </Button>
       </div>
 

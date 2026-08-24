@@ -18,7 +18,7 @@ export function ProductModalFooter({ product, onClose, onSubmit, isSubmitting }:
         onClick={onClose}
         className="!bg-transparent !border-rose-200 dark:!border-rose-900/30 !text-[#ff4b6e] hover:!bg-rose-50 dark:hover:!bg-rose-500/10 hover:!opacity-100 !shadow-none !px-4 sm:!px-6 !py-2.5 sm:!py-3.5 !text-[9px] sm:!text-[10px] !rounded-2xl !shrink-0 !min-h-0"
       >
-        {"discard_upper"}
+        {"Discard Upper"}
       </Button>
       <Button
         type="button"

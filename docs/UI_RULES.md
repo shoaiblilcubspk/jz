@@ -85,3 +85,14 @@
 - [ ] Icons via `AppIcons` where mapped
 - [ ] Exports via `src/shared/export` — no Blob/window.print copies
 - [ ] New shared module? → registered in [docs/MODULES.md](MODULES.md) (SAME change)
+
+## 8. DOUBLE-CLICK PREVENTION (STRICT MANDATE)
+- **All critical form submissions and async button clicks MUST use `useActionGuard`** from `src/hooks/useActionGuard.ts`.
+- Manual `useState(false)` locks for network requests are prone to React batching bugs (fast double-clicks). `useActionGuard` uses a synchronous `useRef` lock under the hood to completely block overlapping requests.
+- Example:
+  ```tsx
+  const { isProcessing, guardedAction } = useActionGuard(async () => {
+    await submitData();
+  });
+  return <Button loading={isProcessing} onClick={guardedAction}>Save</Button>;
+  ```

@@ -286,7 +286,6 @@ const appUsers = useUsersStore(s => s.users);
     }));
   };
 
-  const t = (key: string, fallback: string = key) => fallback;
 
   return {
     appCurrentUser,
@@ -299,6 +298,5 @@ const appUsers = useUsersStore(s => s.users);
     handleSubmit,
     handleChange,
     handleRoleChange,
-    t,
   };
 }

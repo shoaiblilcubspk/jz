@@ -79,7 +79,7 @@ export function BulkEditModal({ isOpen, onClose, selectedIds, categories, suppli
       <Modal
         isOpen={isOpen}
         onClose={onClose}
-        title={"bulk_logistics"}
+        title={"Bulk Logistics"}
         subtitle={"executing_bulk_protocols".replace('{count}', selectedIds.length.toString())}
         maxWidth="lg"
         footer={
@@ -89,7 +89,7 @@ export function BulkEditModal({ isOpen, onClose, selectedIds, categories, suppli
               onClick={onClose}
               className="!bg-transparent !border-rose-200 dark:!border-rose-900/30 !text-[#ff4b6e] hover:!bg-rose-50 dark:hover:!bg-rose-500/10 hover:!opacity-100 !shadow-none !px-4 sm:!px-6 !py-2.5 sm:!py-3.5 !text-[9px] sm:!text-[10px] !rounded-2xl !shrink-0 !min-h-0"
             >
-              {"abort_protocol"}
+              {"Abort Protocol"}
             </Button>
             <Button
               variant="primary"
@@ -109,29 +109,29 @@ export function BulkEditModal({ isOpen, onClose, selectedIds, categories, suppli
           <div className="space-y-6">
             <h3 className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest flex items-center gap-3">
               <span className="w-8 h-px bg-gray-200 dark:bg-white/10"></span>
-              {"financial_overrides"}
+              {"Financial Overrides"}
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider block">{"retail_price"}</label>
+                <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider block">{"Retail Price"}</label>
                 <div className="relative">
                   <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />
                   <input
                     type="number"
-                    placeholder={"no_change"}
+                    placeholder={"No Change"}
                     className="w-full pl-12 pr-4 bg-[#f8f9fa] dark:bg-black/75 border-none text-gray-900 dark:text-white text-sm rounded-xl py-2.5 focus:ring-2 focus:ring-emerald-500 transition-all font-medium placeholder:text-gray-600"
                     onChange={(e) => setUpdates(prev => ({ ...prev, price: e.target.value ? parseFloat(e.target.value) : undefined }))}
                   />
                 </div>
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider block">{"acquisition_cost"}</label>
+                <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider block">{"Acquisition Cost"}</label>
                 <div className="relative">
                   <DollarSign className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />
                   <input
                     type="number"
-                    placeholder={"no_change"}
+                    placeholder={"No Change"}
                     className="w-full pl-12 pr-4 bg-[#f8f9fa] dark:bg-black/75 border-none text-gray-900 dark:text-white text-sm rounded-xl py-2.5 focus:ring-2 focus:ring-emerald-500 transition-all font-medium placeholder:text-gray-600"
                     onChange={(e) => setUpdates(prev => ({ ...prev, cost: e.target.value ? parseFloat(e.target.value) : undefined }))}
                   />
@@ -144,18 +144,18 @@ export function BulkEditModal({ isOpen, onClose, selectedIds, categories, suppli
           <div className="space-y-6">
             <h3 className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest flex items-center gap-3">
               <span className="w-8 h-px bg-gray-200 dark:bg-white/10"></span>
-              {"classification_matrix"}
+              {"Classification Matrix"}
             </h3>
             <div className="space-y-5 relative z-30">
               <SearchableSelect
-                label={"global_category"}
+                label={"Global Category"}
                 options={[{ id: '', label: "no_change" }, ...availableCategories.map(cat => ({ id: cat, label: cat }))]}
                 value={updates.category || ''}
                 onChange={(val) => setUpdates(prev => ({ ...prev, category: val || undefined }))}
                 icon={Tag}
               />
               <SearchableSelect
-                label={"primary_supplier"}
+                label={"Primary Supplier"}
                 options={[{ id: '', label: "no_change" }, ...availableSuppliers.map(sup => ({ id: sup, label: sup }))]}
                 value={updates.supplier || ''}
                 onChange={(val) => setUpdates(prev => ({ ...prev, supplier: val || undefined }))}
@@ -169,11 +169,11 @@ export function BulkEditModal({ isOpen, onClose, selectedIds, categories, suppli
             <div className="flex items-center justify-between">
               <h3 className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest flex items-center gap-3">
                 <span className="w-8 h-px bg-gray-200 dark:bg-white/10"></span>
-                {"visual_protocol"}
+                {"Visual Protocol"}
               </h3>
               {updates.image && (
                 <Button variant="ghost" onClick={() => setUpdates(prev => ({ ...prev, image: undefined }))} className="!min-h-0 !p-0 !bg-transparent hover:!bg-transparent !text-rose-500 !text-[10px] hover:!underline">
-                  {"reset_asset"}
+                  {"Reset Asset"}
                 </Button>
               )}
             </div>
@@ -198,7 +198,7 @@ export function BulkEditModal({ isOpen, onClose, selectedIds, categories, suppli
           <div className="space-y-6">
             <h3 className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest flex items-center gap-3">
               <span className="w-8 h-px bg-gray-200 dark:bg-white/10"></span>
-              {"operational_state"}
+              {"Operational State"}
             </h3>
 
             <div className="grid grid-cols-1 gap-4">

@@ -8,6 +8,7 @@ import { ProductFormFields } from './ProductFormFields';
 import { ProductAdvanced } from './ProductAdvanced';
 import { ProductModalFooter } from './ProductModalFooter';
 import { useProductSubmit } from './useProductSubmit';
+import { useActionGuard } from '../../../hooks/useActionGuard';
 
 interface ProductModalProps {
   isOpen: boolean;
@@ -42,8 +43,6 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
   const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const [showScanner, setShowScanner] = useState(false);
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
   const handleSubmit = useProductSubmit({
     product,
     formData,
@@ -60,15 +59,9 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
     onClose,
   });
 
-  const onSubmit = async () => {
-    if (isSubmitting) return;
-    setIsSubmitting(true);
-    try {
-      await handleSubmit();
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const { isProcessing: isSubmitting, guardedAction: onSubmit } = useActionGuard(async () => {
+    await handleSubmit();
+  });
 
   if (!isOpen) return null;
 

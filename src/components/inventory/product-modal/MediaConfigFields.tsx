@@ -15,7 +15,7 @@ export function MediaConfigFields(props: ProductFormFieldsProps) {
       <div className="space-y-4">
         <h3 className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest flex items-center gap-3">
           <span className="w-8 h-px bg-gray-200 dark:bg-white/10"></span>
-          {"visual_assets"}
+          {"Visual Assets"}
         </h3>
 
         <div className="flex flex-col sm:flex-row gap-4 items-start">

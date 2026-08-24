@@ -1,6 +1,7 @@
 import { supabase } from '../supabase';
 import { localDb, generateId } from '../localDb';
 import { CustomerLedger } from '../../types';
+import { signAction } from '../actionToken';
 
 /** Map DB row → CustomerLedger */
 export const mapCustomerLedger = (row: any): CustomerLedger => ({
@@ -36,8 +37,12 @@ export async function receiveCustomerPayment(params: {
   reference?: string;
   note?: string;
   createdBy?: string;
+  idempotencyKey?: string;
 }): Promise<{ balanceBefore: number; balanceAfter: number; ledgerId: string }> {
-  const idempotencyKey = `rcv_${params.customerId}_${Date.now()}_${generateId().slice(0, 8)}`;
+  const idempotencyKey = params.idempotencyKey || `rcv_${params.customerId}_${Date.now()}_${generateId().slice(0, 8)}`;
+
+  const token = await signAction('receive_customer_payment');
+  if (!token) throw new Error('Unauthorized: Missing action token for receive_customer_payment');
 
   const { data, error } = await supabase.rpc('receive_customer_payment', {
     p_customer_id: params.customerId,
@@ -47,6 +52,7 @@ export async function receiveCustomerPayment(params: {
     p_note: params.note || null,
     p_created_by: params.createdBy || null,
     p_idempotency_key: idempotencyKey,
+    p_sig: token.p_sig,
   });
 
   if (error) throw error;
@@ -74,6 +80,9 @@ export async function refundCustomerPayment(params: {
 }): Promise<{ balanceBefore: number; balanceAfter: number; ledgerId: string }> {
   const idempotencyKey = `ref_${params.customerId}_${Date.now()}_${generateId().slice(0, 8)}`;
 
+  const token = await signAction('refund_customer_payment');
+  if (!token) throw new Error('Unauthorized: Missing action token for refund_customer_payment');
+
   const { data, error } = await supabase.rpc('refund_customer_payment', {
     p_customer_id: params.customerId,
     p_amount: params.amount,
@@ -83,6 +92,7 @@ export async function refundCustomerPayment(params: {
     p_note: params.note || null,
     p_created_by: params.createdBy || null,
     p_idempotency_key: idempotencyKey,
+    p_sig: token.p_sig,
   });
 
   if (error) throw error;

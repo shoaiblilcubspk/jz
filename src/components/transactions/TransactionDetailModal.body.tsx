@@ -75,6 +75,10 @@ export function TransactionDetailModal({ transaction, allTransactions, onNavigat
       sonner.error('You do not have permission to refund sales.');
       return;
     }
+    if (transaction.total < 0) {
+      sonner.error('Cannot refund a return receipt.');
+      return;
+    }
     if (transaction.status === 'refunded') {
       sonner.error('Sale is already fully refunded.');
       return;

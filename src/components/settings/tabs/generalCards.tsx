@@ -8,14 +8,12 @@ import { CURRENCIES } from '../../../lib/currencies';
 type ChangeHandler = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => void;
 type SetForm = React.Dispatch<React.SetStateAction<any>>;
 type InstantUpdater = (name: string, value: any) => Promise<void>;
-type Translate = (key: string, fallback: string) => string;
 
 interface StoreIdentityProps {
   formData: any;
   setFormData: SetForm;
   handleChange: ChangeHandler;
   handleInstantUpdate: InstantUpdater;
-  t: Translate;
 }
 
 interface LocalizationProps {
@@ -23,17 +21,15 @@ interface LocalizationProps {
   setFormData: SetForm;
   handleChange: ChangeHandler;
   handleInstantUpdate: InstantUpdater;
-  t: Translate;
 }
 
 interface InvoicingProps {
   formData: any;
   handleChange: ChangeHandler;
   handleRepairCounter: () => Promise<void>;
-  t: Translate;
 }
 
-export function GeneralStoreIdentity({ formData, setFormData, handleChange, handleInstantUpdate, t }: StoreIdentityProps) {
+export function GeneralStoreIdentity({ formData, setFormData, handleChange, handleInstantUpdate}: StoreIdentityProps) {
   return (
     <div className="p-4 sm:p-6 bg-gray-50/50 dark:bg-white/[0.02] rounded-[2rem] border border-gray-200 dark:border-white/5 space-y-6">
       <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-6 border-b border-gray-200 dark:border-white/5">
@@ -42,8 +38,8 @@ export function GeneralStoreIdentity({ formData, setFormData, handleChange, hand
             <Store className="w-5 h-5 text-[#10B981]" />
           </div>
           <div>
-            <h3 className="text-base font-black text-gray-900 dark:text-white uppercase tracking-tight">{t("store_identity", "Store Identity")}</h3>
-            <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-0.5">{t("store_identity_subtitle", "How your business appears to customers")}</p>
+            <h3 className="text-base font-black text-gray-900 dark:text-white uppercase tracking-tight">{"Store Identity"}</h3>
+            <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-0.5">{"How your business appears to customers"}</p>
           </div>
         </div>
         <div className="w-full md:w-auto">
@@ -59,7 +55,7 @@ export function GeneralStoreIdentity({ formData, setFormData, handleChange, hand
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("business_name", "Business Name")}</label>
+          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Business Name"}</label>
           <input
             type="text"
             name="storeName"
@@ -70,7 +66,7 @@ export function GeneralStoreIdentity({ formData, setFormData, handleChange, hand
           />
         </div>
         <div className="space-y-1.5">
-          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("contact_phone", "Contact Phone")}</label>
+          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Contact Phone"}</label>
           <input
             type="tel"
             name="storePhone"
@@ -81,7 +77,7 @@ export function GeneralStoreIdentity({ formData, setFormData, handleChange, hand
           />
         </div>
         <div className="space-y-1.5">
-          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("store_email", "Store Email")}</label>
+          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Store Email"}</label>
           <input
             type="email"
             name="storeEmail"
@@ -92,7 +88,7 @@ export function GeneralStoreIdentity({ formData, setFormData, handleChange, hand
           />
         </div>
         <div className="space-y-1.5">
-          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("store_website", "Store Website")}</label>
+          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Store Website"}</label>
           <input
             type="text"
             name="storeWebsite"
@@ -103,7 +99,7 @@ export function GeneralStoreIdentity({ formData, setFormData, handleChange, hand
           />
         </div>
         <div className="md:col-span-2 space-y-1.5">
-          <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("physical_address", "Physical Address")}</label>
+          <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Physical Address"}</label>
           <textarea
             name="storeAddress"
             value={formData.storeAddress}
@@ -118,7 +114,7 @@ export function GeneralStoreIdentity({ formData, setFormData, handleChange, hand
   );
 }
 
-export function GeneralLocalization({ formData, setFormData, handleChange, handleInstantUpdate, t }: LocalizationProps) {
+export function GeneralLocalization({ formData, setFormData, handleChange, handleInstantUpdate}: LocalizationProps) {
   return (
     <div className="p-4 sm:p-6 bg-gray-50/50 dark:bg-white/[0.02] rounded-[2rem] border border-gray-200 dark:border-white/5 space-y-6">
       <div className="flex items-center gap-3 pb-4 border-b border-gray-200 dark:border-white/5">
@@ -126,14 +122,14 @@ export function GeneralLocalization({ formData, setFormData, handleChange, handl
           <Globe className="w-5 h-5 text-blue-500" />
         </div>
         <div>
-          <h3 className="text-base font-black text-gray-900 dark:text-white uppercase tracking-tight">{t("localization_defaults", "Localization & Defaults")}</h3>
-          <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-0.5">{t("localization_defaults_subtitle", "Currencies, languages and system default types")}</p>
+          <h3 className="text-base font-black text-gray-900 dark:text-white uppercase tracking-tight">{"Localization & Defaults"}</h3>
+          <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-0.5">{"Currencies, languages and system default types"}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2 relative z-30">
-          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("store_currency", "Store Currency")}</label>
+          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Store Currency"}</label>
           <SearchableSelect
             options={CURRENCIES.map(c => ({ id: c.code, label: `${c.code} - ${c.name} (${c.symbol})` }))}
             value={formData.currency}
@@ -146,7 +142,7 @@ export function GeneralLocalization({ formData, setFormData, handleChange, handl
           />
         </div>
         <div className="space-y-2 relative z-30">
-          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("store_country", "Store Country")}</label>
+          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Store Country"}</label>
           <SearchableSelect
             options={[
               { id: 'PK', label: 'Pakistan (🇵🇰)' },
@@ -187,8 +183,8 @@ export function GeneralLocalization({ formData, setFormData, handleChange, handl
           <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Default POS View"}</label>
           <SearchableSelect
             options={[
-              { id: 'retail', label: t('retail_sales', 'Retail Mode') },
-              { id: 'wholesale', label: t('wholesale_mode', 'Wholesale Mode') }
+              { id: 'retail', label: 'Retail Mode' },
+              { id: 'wholesale', label: 'Wholesale Mode' }
             ]}
             value={formData.defaultSaleType || 'retail'}
             onChange={(val) => {
@@ -200,7 +196,7 @@ export function GeneralLocalization({ formData, setFormData, handleChange, handl
           />
         </div>
         <div className="space-y-2 relative z-10">
-          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("standard_paper_size", "Standard Paper Size")}</label>
+          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Standard Paper Size"}</label>
           <SearchableSelect
             options={[
               { id: '80mm', label: '80mm (Standard Thermal)' },
@@ -218,7 +214,7 @@ export function GeneralLocalization({ formData, setFormData, handleChange, handl
         </div>
         <div className="grid grid-cols-2 gap-2 relative">
           <div className="space-y-1.5">
-            <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("default_tax_percent", "Default Tax %")}</label>
+            <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Default Tax %"}</label>
             <input
               type="number"
               name="taxRate"
@@ -230,7 +226,7 @@ export function GeneralLocalization({ formData, setFormData, handleChange, handl
             />
           </div>
           <div className="space-y-1.5">
-            <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("tax_business_id", "Tax/Business ID")}</label>
+            <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Tax/Business ID"}</label>
             <input
               type="text"
               name="taxId"
@@ -246,7 +242,7 @@ export function GeneralLocalization({ formData, setFormData, handleChange, handl
   );
 }
 
-export function GeneralInvoicing({ formData, handleChange, handleRepairCounter, t }: InvoicingProps) {
+export function GeneralInvoicing({ formData, handleChange, handleRepairCounter}: InvoicingProps) {
   return (
     <div className="p-4 sm:p-6 bg-gray-50/50 dark:bg-white/[0.02] rounded-[2rem] border border-gray-200 dark:border-white/5 space-y-6">
       <div className="flex items-center gap-4 pb-4 border-b border-gray-200 dark:border-white/5">
@@ -254,14 +250,14 @@ export function GeneralInvoicing({ formData, handleChange, handleRepairCounter, 
           <ClipboardList className="w-5 h-5 text-amber-500" />
         </div>
         <div>
-          <h3 className="text-base font-black text-gray-900 dark:text-white uppercase tracking-tight">{t("business_logic", "Business Logic")}</h3>
-          <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-0.5">{t("business_logic_subtitle", "Invoicing, prefix, and serialization controls")}</p>
+          <h3 className="text-base font-black text-gray-900 dark:text-white uppercase tracking-tight">{"Business Logic"}</h3>
+          <p className="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-0.5">{"Invoicing, prefix, and serialization controls"}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-1.5">
-          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{t("invoice_prefix", "Invoice Prefix")}</label>
+          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1">{"Invoice Prefix"}</label>
           <input
             type="text"
             name="invoicePrefix"
@@ -271,7 +267,7 @@ export function GeneralInvoicing({ formData, handleChange, handleRepairCounter, 
           />
         </div>
         <div className="space-y-1.5 flex flex-col justify-end">
-          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1 mb-1.5">{t("serial_start", "Serial Start")}</label>
+          <label className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest ml-1 mb-1.5">{"Serial Start"}</label>
           <div className="flex gap-2">
             <input
               type="number"

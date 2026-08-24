@@ -185,8 +185,8 @@ export function BarcodeGenerator({ products, onClose, onProductsChange }: Barcod
                         <Printer className="h-4 w-4 text-blue-600" />
                     </div>
                     <div className="min-w-0">
-                        <h2 className="text-sm font-black text-gray-900 dark:text-white leading-none truncate">{"barcode_print_engine"}</h2>
-                        <p className="hidden sm:block text-[9px] text-gray-600 mt-0.5 truncate">{"barcode_print_engine_sub"}</p>
+                        <h2 className="text-sm font-black text-gray-900 dark:text-white leading-none truncate">{"Barcode Print Engine"}</h2>
+                        <p className="hidden sm:block text-[9px] text-gray-600 mt-0.5 truncate">{"Barcode Print Engine Sub"}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2 flex-shrink-0">
@@ -205,7 +205,7 @@ export function BarcodeGenerator({ products, onClose, onProductsChange }: Barcod
                         className="!h-9 !min-h-0 !px-4 !gap-1.5 !text-[10px] !font-black !shadow-md !shadow-blue-500/20 whitespace-nowrap"
                         icon={<Printer className="h-3.5 w-3.5 flex-shrink-0" />}
                     >
-                        <span className="hidden xs:inline">{"print_and_save"}</span>
+                        <span className="hidden xs:inline">{"Print And Save"}</span>
                         <span className="xs:hidden">{"print"}</span>
                     </Button>
                     <Button variant="ghost" onClick={onClose} className="!min-h-0 !p-1.5 !rounded-lg !text-gray-600 hover:!text-gray-700 dark:hover:!text-white hover:!bg-gray-100 dark:hover:!bg-white/5" icon={<X className="h-4.5 w-4.5" />} />
@@ -240,7 +240,7 @@ export function BarcodeGenerator({ products, onClose, onProductsChange }: Barcod
                                 <span className="text-[9px] font-black text-gray-600">{a4Columns}×{a4Rows}</span>
                             </div>
                             <Badge tone="warning" className="!bg-amber-500/10 !text-amber-600 dark:!text-amber-400 !text-[8px] !px-2.5 !py-1 !rounded-full !border-amber-500/20 hidden sm:inline-flex">
-                                ⚠ {"margins_none"}
+                                ⚠ {"Margins None"}
                             </Badge>
                         </div>
 
@@ -281,7 +281,7 @@ export function BarcodeGenerator({ products, onClose, onProductsChange }: Barcod
 
                             <div className="w-px h-4 bg-gray-200 dark:bg-white/10 mx-1" />
 
-                            <Button onClick={calcAutoScale} title={"fit_to_window"}
+                            <Button onClick={calcAutoScale} title={"Fit To Window"}
                                 variant="ghost"
                                 className="!min-h-0 !w-6 !h-6 !p-0 !rounded-lg !bg-transparent !text-gray-500 hover:!text-gray-900 dark:hover:!text-white hover:!bg-gray-100 dark:hover:!bg-white/10 active:!scale-90"
                                 icon={<Maximize2 className="h-3 w-3" />}

@@ -9,6 +9,7 @@ import { cloudWrite } from '../cloudWrite';
 import { toRemoteSupplier, toRemoteSupplierTransaction, mapSupplier } from './mappers';
 import { fetchAllPages, normalizePaymentMethod } from './utils';
 import { adjustPaymentBalances } from './paymentsService';
+import { signAction } from '../actionToken';
 
 export const suppliersService = {
   async getAll(): Promise<Supplier[]> {
@@ -104,7 +105,33 @@ export const suppliersService = {
       expenseId: data.expenseId,
       createdAt: new Date()
     };
-    await cloudWrite('supplier_transactions', 'create', id, toRemoteSupplierTransaction(tx));
+    
+    const token = await signAction('pay_supplier');
+    if (!token) {
+      throw new Error('Unauthorized: Missing action token for pay_supplier');
+    }
+
+    const { data: rpcData, error } = await supabase.rpc('pay_supplier_atomic', {
+      p_supplier_id: data.supplier_id,
+      p_amount: totalAmount,
+      p_payment_type: data.payment_type,
+      p_note: data.note || null,
+      p_idempotency_key: data.expenseId || id, // Using expenseId as idempotency key if provided
+      p_sig: token.p_sig,
+    });
+
+    if (error) {
+      console.error('pay_supplier_atomic error:', error);
+      throw error;
+    }
+
+    if (rpcData && rpcData.duplicate) {
+      console.warn('pay_supplier_atomic duplicate detected');
+      return tx;
+    }
+
+    // Now update local cache for SupplierTransaction
+    tx.id = rpcData.transaction_id || id;
     await localDb.supplierTransactions.add(tx);
     // Wallet deduction: paying supplier = money OUT of our register (split-aware)
     if (split) {

@@ -22,7 +22,7 @@ export function BasicInfoFields(props: ProductFormFieldsProps) {
     <div className="space-y-4">
       <h3 className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest flex items-center gap-3">
         <span className="w-8 h-px bg-gray-200 dark:bg-white/10"></span>
-        {"identity_origin"}
+        {"Identity Origin"}
       </h3>
 
       <SegmentedControl
@@ -37,7 +37,7 @@ export function BasicInfoFields(props: ProductFormFieldsProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2 md:col-span-2">
           <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center">
-            {"product_name_req"}
+            {"Product Name Req"}
             <HelpTooltip content="The commercial title of the product or service displayed on receipts, invoices, and POS terminal." />
           </label>
           <input
@@ -52,7 +52,7 @@ export function BasicInfoFields(props: ProductFormFieldsProps) {
 
         <div className="space-y-2">
           <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center">
-            {"category_req"}
+            {"Category Req"}
             <HelpTooltip content="Organizes items into departments for structured reporting and quick filtering at the POS checkout." />
           </label>
           <div className="flex gap-2">
@@ -63,7 +63,7 @@ export function BasicInfoFields(props: ProductFormFieldsProps) {
                 onChange={onFieldChange}
                 className="!bg-[#f8f9fa] dark:!bg-black/75 !border-none !text-sm !rounded-xl !px-4 !text-gray-900 dark:!text-white !font-medium"
               >
-                <option value="" disabled>{"select_category"}</option>
+                <option value="" disabled>{"Select Category"}</option>
                 {categories.map(c => <option key={c} value={c} className="dark:bg-surface">{c}</option>)}
               </Select>
             </div>
@@ -84,7 +84,7 @@ export function BasicInfoFields(props: ProductFormFieldsProps) {
                 onChange={onFieldChange}
                 className="!bg-[#f8f9fa] dark:!bg-black/75 !border-none !text-sm !rounded-xl !px-4 !text-gray-900 dark:!text-white !font-medium"
               >
-                <option value="">{"select_supplier_optional"}</option>
+                <option value="">{"Select Supplier Optional"}</option>
                 {suppliers.map(s => <option key={s} value={s} className="dark:bg-surface">{s}</option>)}
               </Select>
             </div>
@@ -121,7 +121,7 @@ export function BasicInfoFields(props: ProductFormFieldsProps) {
               name="barcode"
               value={formData.barcode}
               onChange={onFieldChange}
-              placeholder={"scan_or_generate"}
+              placeholder={"Scan Or Generate"}
               className="flex-1 min-w-0 bg-[#f8f9fa] dark:bg-black/75 border-none text-gray-900 dark:text-white text-sm rounded-xl px-4 py-2.5 focus:ring-2 focus:ring-emerald-500 transition-all uppercase font-medium placeholder:text-gray-600"
             />
             <Button type="button" variant="ghost" onClick={onGenerateBarcode} className="!min-h-0 !w-11 !h-11 !p-0 !rounded-xl !bg-emerald-50 dark:!bg-emerald-500/10 hover:!bg-emerald-100 dark:hover:!bg-emerald-500/20 !text-emerald-600 dark:!text-emerald-400 shrink-0" icon={<Wand2 className="w-4 h-4" />} />

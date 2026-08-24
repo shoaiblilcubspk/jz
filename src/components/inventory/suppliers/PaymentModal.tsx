@@ -28,8 +28,7 @@ export function PaymentModal({
   isOpen, onClose, supplierName, balance, appSettings,
   paymentAmount, setPaymentAmount, paymentMethod, setPaymentMethod,
   paymentNote, setPaymentNote, isPaymentManualOverride, setIsPaymentManualOverride,
-  submitPayment, formLoading, t
-}: Props) {
+  submitPayment, formLoading}: Props) {
   return (
     <Modal
       isOpen={isOpen}

@@ -6,6 +6,7 @@ import { localDb } from '../../../lib/localDb';
 import { sonner } from '../../../lib/sonner';
 import { useAuth } from '../../../context/AuthContext';
 import { useInvoiceGeneration } from '../../../hooks/useInvoice';
+import { useActionGuard } from '../../../hooks/useActionGuard';
 
 interface UseCheckoutPaymentProps {
   appSettings: any;
@@ -66,8 +67,6 @@ export function useCheckoutPayment({
   setShowReceipt,
   setCompletedSale,
 }: UseCheckoutPaymentProps) {
-  const [isProcessing, setIsProcessing] = useState(false);
-  const processingLock = useRef(false);
   const editNewIdRef = useRef<{ oldId: string; newId: string } | null>(null);
   
   const appProducts = useProductsStore(s => s.products);
@@ -100,11 +99,7 @@ export function useCheckoutPayment({
     }
   };
 
-  const handlePayment = async () => {
-    if (processingLock.current) return;
-    processingLock.current = true;
-    setIsProcessing(true);
-    
+  const { isProcessing, guardedAction: handlePayment } = useActionGuard(async () => {
     try {
       if (!appSettings.allowNegativeStock) {
         for (const item of checkoutCartItems) {
@@ -176,8 +171,6 @@ export function useCheckoutPayment({
           savedSale = await salesService.editSaleAtomic(editingSale, sale, profile?.name || 'Admin');
           useSalesStore.getState().deleteSale(oldSaleId);
         } catch (error) {
-          processingLock.current = false;
-          setIsProcessing(false);
           console.error('BILL EDIT FAILED', error);
           sonner.error('⚠️ Bill Edit Failed', 'The original bill is intact. Please retry saving the edited bill.');
           return;
@@ -186,7 +179,6 @@ export function useCheckoutPayment({
         editNewIdRef.current = null;
       } else {
         savedSale = await salesService.create(sale);
-        await adjustPaymentBalances(buildSalePaymentMoves(sale), { batchId: sale.id });
       }
 
       if ((savedSale as any).wasOversold) {
@@ -199,15 +191,11 @@ export function useCheckoutPayment({
       useCartStore.getState().clearCart();
       setCompletedSale(savedSale);
       onComplete(savedSale);
-      setIsProcessing(false);
-      processingLock.current = false;
       setShowReceipt(true);
     } catch (error: any) {
-      setIsProcessing(false);
-      processingLock.current = false;
       sonner.error(error.message || 'Payment processing failed. Please try again.');
     }
-  };
+  });
 
-  return { handlePayment, isProcessing, setIsProcessing };
+  return { handlePayment, isProcessing };
 }

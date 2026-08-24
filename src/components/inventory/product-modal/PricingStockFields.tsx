@@ -9,13 +9,13 @@ export function PricingStockFields(props: ProductFormFieldsProps) {
       <div className="space-y-4">
         <h3 className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest flex items-center gap-3">
           <span className="w-8 h-px bg-gray-200 dark:bg-white/10"></span>
-          {"financials_inventory"}
+          {"Financials Inventory"}
         </h3>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div className="space-y-2">
             <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center">
-              {"selling_price"}
+              {"Selling Price"}
               <HelpTooltip content="The retail price charged to customers at checkout. Tax calculations will be applied on top of or inclusive of this figure." />
             </label>
             <input
@@ -28,7 +28,7 @@ export function PricingStockFields(props: ProductFormFieldsProps) {
           </div>
           <div className="space-y-2">
             <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center">
-              {"cost_price"}
+              {"Cost Price"}
               <HelpTooltip content="The wholesale acquisition cost. Used strictly for calculating Cost of Goods Sold (COGS), gross profit, and valuation." />
             </label>
             <input
@@ -56,7 +56,7 @@ export function PricingStockFields(props: ProductFormFieldsProps) {
             />
             <div>
               <div className="text-xs font-black text-gray-700 dark:text-gray-200 uppercase tracking-wide flex items-center">
-                {"enable_active_tracking"}
+                {"Enable Active Tracking"}
                 <HelpTooltip content="Maintains real-time stock balances across sales and returns. Disabling this treats the item as having infinite supply." />
               </div>
               <div className="text-[10px] font-bold text-gray-600 dark:text-gray-400 uppercase tracking-widest mt-0.5">
@@ -69,7 +69,7 @@ export function PricingStockFields(props: ProductFormFieldsProps) {
             <div className="grid grid-cols-2 gap-4 animate-in fade-in slide-in-from-top-2 duration-300">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center">
-                  {"initial_stock"}
+                  {"Initial Stock"}
                   <HelpTooltip content="The starting physical inventory count available on hand when creating this item." />
                 </label>
                 <input
@@ -82,7 +82,7 @@ export function PricingStockFields(props: ProductFormFieldsProps) {
               </div>
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-wider flex items-center">
-                  {"low_stock_alert"}
+                  {"Low Stock Alert"}
                   <HelpTooltip content="Threshold at which item appears on the Low Stock dashboard widget and reorder reports." />
                 </label>
                 <input

@@ -81,15 +81,15 @@
 - Loaders: `<SkeletonLoader />` only. No generic spinners.
 - Modals: center on mobile (`items-center justify-center`). Form modals `maxWidth="lg"|"xl"` + `md:grid-cols-2`.
 - Media: ALL image uploads via `MediaLibrary` component. Direct file-pickers banned.
-- Before UI work → read `docs/UI_RULES.md` + `docs/MODULES.md`
+- **MANDATORY**: Before ANY UI or frontend work, read `docs/UI_RULES.md` + `docs/MODULES.md`.
 
 ---
 
 ## 🗄️ Database Rules
 - **Supabase Management API ONLY** (`sbp_` token + curl). No Prisma, no psql, no Dashboard.
 - Each schema change = migration file (`supabase/migrations/YYYYMMDDHHMMSS_*.sql`) + update `SUPER_MASTER_SCHEMA.sql`
-- See `docs/supabase-api-guide.md` for API reference
-- See `docs/setup.md` for clone/deployment guide
+- **MANDATORY**: For ANY API or database operations, read `docs/supabase-api-guide.md`
+- **MANDATORY**: For ANY clone/deployment setup, read `docs/setup.md`
 
 ---
 
@@ -112,7 +112,9 @@
 7. **Universal code.** Every fix works across ALL clones. No shop-specific code.
 8. **Time formatting.** Always `formatAppTime/Date/DateTime` from `src/lib/dateUtils.ts`. Never raw `toLocaleTimeString()`.
 9. **Cloud-Direct Local Caching.** Local IndexedDB must NEVER block object creation (duplicate fallback) if the cloud successfully verified it doesn't exist. Always use `.clear()` before `.bulkPut()` on startup to ensure exact parity with cloud and prevent stale UI ghosts (especially for new clone setups or wiped DBs).
-10. **360° UNIVERSAL IMPACT MAPPING — ZERO-MISSED-ROOT PROTOCOL.** Before writing code, you MUST read **`docs/IMPACT_360.md`**. Always create an Impact Map, find ALL existing relevant places, and keep the map updated when adding new features. Zero missed roots.
+10. **360° UNIVERSAL IMPACT MAPPING — ZERO-MISSED-ROOT PROTOCOL.** Before writing code or adding ANY new feature/implementation, you MUST read **`docs/IMPACT_360.md`**. Always create an Impact Map, find ALL existing relevant places, and keep the map updated. Zero missed roots.
+11. **STRICT COMPLIANCE RULE:** Do exactly what the user explicitly instructs. No half-measures. Do not apply your own assumptions to skip or modify explicit instructions. Hamesha poora kaam mandatory hai.
+12. **MANDATORY EVIDENCE RULE:** NEVER claim a feature is "100% OK" or "fixed" without providing evidence. You MUST write and run an SQL simulation, or a frontend build check, and show the actual output logs as proof of atomicity/security before confirming. Use negative testing (fail-closed checks) to prove that invalid inputs are correctly blocked.
 
 
 ---

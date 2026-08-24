@@ -7,6 +7,7 @@ import { signWithSupervisor } from '../../lib/actionToken';
 import { sonner } from '../../lib/sonner';
 import { formatCurrency } from '../../lib/currencies';
 import { useSalesStore, useCustomersStore, useCartStore } from '../../stores';
+import { useActionGuard } from '../../hooks/useActionGuard';
 
 type SupervisorGate = { action: 'delete' } | { action: 'refund'; request: RefundRequest } | null;
 
@@ -33,14 +34,12 @@ export function useTransactionDetailActions({
   profile,
   currency,
 }: TransactionDetailActionsParams) {
-  const [isProcessingAction, setIsProcessing] = useState(false);
   const [supervisorGate, setSupervisorGate] = useState<SupervisorGate>(null);
   const [isVerifyingSupervisor, setIsVerifyingSupervisor] = useState(false);
 
-  const handleEditSale = async () => {
+  const { isProcessing: isProcessingEdit, guardedAction: handleEditSale } = useActionGuard(async () => {
     const result = await sonner.confirm('Edit Sale?', 'Load items and notes to cart for editing?', 'Yes');
     if (!result.isConfirmed) return;
-    setIsProcessing(true);
     try {
       useCartStore.getState().clearCart();
       transaction.items.forEach(item => useCartStore.getState().addToCart(item));
@@ -57,13 +56,10 @@ export function useTransactionDetailActions({
       detailNavigate('/pos');
     } catch {
       sonner.error('Error editing sale.');
-    } finally {
-      setIsProcessing(false);
     }
-  };
+  });
 
-  const executeRefund = async (request: RefundRequest, overrideToken?: { p_user_id: string; p_role: string; p_sig: string } | null) => {
-    setIsProcessing(true);
+  const { isProcessing: isProcessingRefund, guardedAction: executeRefund } = useActionGuard(async (request: RefundRequest, overrideToken?: { p_user_id: string; p_role: string; p_sig: string } | null) => {
     try {
       await salesService.returnSale(transaction.id, request, profile?.name || 'Cashier', overrideToken);
 
@@ -98,10 +94,8 @@ export function useTransactionDetailActions({
         return;
       }
       sonner.error('Error refunding sale.');
-    } finally {
-      setIsProcessing(false);
     }
-  };
+  });
 
   const handleWhatsAppShare = () => {
     const customer = appCustomers.find(c => c.id === transaction.customerId);
@@ -113,7 +107,7 @@ export function useTransactionDetailActions({
     window.open(`https://wa.me/${fp}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
-  const handleDeleteSale = async () => {
+  const { isProcessing: isProcessingDelete, guardedAction: handleDeleteSale } = useActionGuard(async () => {
     const result = await sonner.confirm(
       'PERMANENT DELETE?',
       'All records (Stock, Reports, Inventory) will be REVERTED. This cannot be undone!',
@@ -121,7 +115,6 @@ export function useTransactionDetailActions({
     );
     if (!result.isConfirmed) return;
 
-    setIsProcessing(true);
     try {
       await salesService.delete(transaction.id, profile?.name || 'Admin');
       useSalesStore.getState().deleteSale(transaction.id);
@@ -136,10 +129,8 @@ export function useTransactionDetailActions({
         return;
       }
       sonner.error('Error deleting sale.');
-    } finally {
-      setIsProcessing(false);
     }
-  };
+  });
 
   /**
    * RBAC SUPERVISOR OVERRIDE: verify admin credentials (server-side signed
@@ -185,6 +176,8 @@ export function useTransactionDetailActions({
   };
 
   const sourceTag = getSaleTypeTag();
+
+  const isProcessingAction = isProcessingEdit || isProcessingRefund || isProcessingDelete;
 
   return {
     isProcessingAction,

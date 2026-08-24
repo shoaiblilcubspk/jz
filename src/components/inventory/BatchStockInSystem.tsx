@@ -191,12 +191,12 @@ export function BatchStockInSystem({ onClose, initialProduct }: BatchStockInSyst
     <div className="flex items-center justify-between w-full">
       <div className="hidden sm:flex items-center gap-6">
         <div className="flex flex-col">
-          <span className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">{"total_sourced_cost"}</span>
+          <span className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">{"Total Sourced Cost"}</span>
           <span className="text-xl font-black text-primary tabular-nums leading-none mt-1">{formatCurrency(totalInvoiceCost, appSettings.currency)}</span>
         </div>
         <div className="w-px h-8 bg-gray-100 dark:bg-white/10" />
         <div className="flex flex-col">
-          <span className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">{"unit_count"}</span>
+          <span className="text-[9px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">{"Unit Count"}</span>
           <span className="text-xl font-black text-gray-900 dark:text-white tabular-nums leading-none mt-1">{totalItemsCount}</span>
         </div>
       </div>
@@ -207,7 +207,7 @@ export function BatchStockInSystem({ onClose, initialProduct }: BatchStockInSyst
           variant="danger"
           className="flex-1 sm:flex-none !min-h-0 !px-4 sm:!px-6 !py-2.5 sm:!py-3.5 !rounded-2xl !bg-transparent !text-[#ff4b6e] hover:!bg-rose-50 dark:hover:!bg-rose-500/10 !text-[9px] sm:!text-[11px] !font-black !shadow-none hover:!opacity-100 shrink-0 !border !border-rose-200 dark:!border-rose-900/30"
         >
-          {"abort_inflow"}
+          {"Abort Inflow"}
         </Button>
         <Button
           onClick={handleCommit}
@@ -217,7 +217,7 @@ export function BatchStockInSystem({ onClose, initialProduct }: BatchStockInSyst
           className="flex-1 sm:flex-none sm:min-w-[280px] !py-2.5 sm:!py-3.5 !text-[9px] sm:!text-[11px]"
         >
           {isCommitting ? <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5 animate-spin" /> : <Save className="h-4 w-4 sm:h-5 sm:w-5" />}
-          <span>{"commit_inventory"}</span>
+          <span>{"Commit Inventory"}</span>
         </Button>
       </div>
     </div>
@@ -227,7 +227,7 @@ export function BatchStockInSystem({ onClose, initialProduct }: BatchStockInSyst
     <Modal
       isOpen={true}
       onClose={onClose}
-      title={"stock_inflow_protocol"}
+      title={"Stock Inflow Protocol"}
       maxWidth="max"
       footer={footer}
     >
@@ -236,13 +236,13 @@ export function BatchStockInSystem({ onClose, initialProduct }: BatchStockInSyst
           <div className="lg:col-span-2 space-y-6">
             <h3 className="text-[11px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest flex items-center gap-3">
               <span className="w-8 h-px bg-gray-200 dark:bg-white/10"></span>
-              {"identity_matching_buffer"}
+              {"Identity Matching Buffer"}
             </h3>
             <div className="relative">
               <SharedSearchBar
                 value={searchQuery}
                 onChange={setSearchQuery}
-                placeholder={"scan_or_type_product_identity"}
+                placeholder={"Scan Or Type Product Identity"}
               />
               {searchResults.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-3 z-50">

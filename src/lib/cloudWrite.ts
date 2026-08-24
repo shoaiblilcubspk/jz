@@ -55,7 +55,11 @@ export async function cloudWrite(
 ): Promise<void> {
   // ---- special-case entities -------------------------------------------------
   if (entity === 'payment_movements') {
-    const { error } = await supabase.rpc('apply_payment_movements', { p_moves: payload });
+    const token = await signAction('apply_payment_movements');
+    const { error } = await supabase.rpc('apply_payment_movements', { 
+      p_moves: payload,
+      p_sig: token?.p_sig ?? null
+    });
     if (error) throw error;
     return;
   }
@@ -185,7 +189,12 @@ export async function cloudWrite(
 
   if (entity === 'expenses' && opType === 'create') {
     if (payload.p_payment_moves) {
-      const rpcPayload: any = { p_expense: { ...payload }, p_payment_move: payload.p_payment_moves };
+      const token = await signAction('commit_expense');
+      const rpcPayload: any = { 
+        p_expense: { ...payload }, 
+        p_payment_moves: payload.p_payment_moves,
+        p_sig: token?.p_sig ?? null
+      };
       delete rpcPayload.p_expense.p_payment_moves;
       const { error } = await supabase.rpc('commit_expense', rpcPayload);
       if (error && !isDuplicate(error)) throw error;

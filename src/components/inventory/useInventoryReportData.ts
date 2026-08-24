@@ -83,7 +83,7 @@ export function useInventoryReportData({
       if (!qty) continue;
       if (h.type !== 'sale' && h.type !== 'return') continue;
       const sale = saleById.get(h.referenceId || '');
-      let item: any = sale?.items?.find((i: any) => i.product?.id === h.productId);
+      let item: any = sale?.items?.find((i: any) => (i.product?.id || i.productId) === h.productId);
       if (!item && sale) {
         for (const it of sale.items || []) {
           const a = (it.addonItems || []).find((ad: any) => ad.addon?.addonProductId === h.productId);

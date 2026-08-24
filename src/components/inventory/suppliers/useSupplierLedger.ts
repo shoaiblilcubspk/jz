@@ -1,5 +1,5 @@
 import { useSettingsStore, useUsersStore, useExpensesStore } from '../../../stores';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Supplier } from '../../../types';
 import { suppliersService, expensesService, generateId } from '../../../lib/services';
 import { sonner } from '../../../lib/sonner';
@@ -42,7 +42,8 @@ export function useSupplierLedger({ supplier, startDate, endDate, dateFilter }: 
       setLedger(data);
       const bal = await suppliersService.getBalance(supplier.id);
       setBalance(bal);
-    } catch (err) {
+      idempotencyKeyRef.current = `sup_pay_${supplier.id}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    } catch (err: any) {
       console.error('Failed to load ledger', err);
     } finally {
       setLoading(false);
@@ -74,30 +75,26 @@ export function useSupplierLedger({ supplier, startDate, endDate, dateFilter }: 
     setShowPaymentModal(true);
   };
 
+  const processingLock = useRef(false);
+  const idempotencyKeyRef = useRef(`sup_pay_${supplier.id}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
+
   const submitPayment = async () => {
+    if (processingLock.current) return;
     const amount = Number(paymentAmount);
     if (!amount || amount <= 0) {
       sonner.error('Please enter a valid amount');
       return;
     }
 
+    processingLock.current = true;
     try {
       setFormLoading(true);
       sonner.loading('Recording payment...');
 
-      const newExpense = {
-        id: generateId(),
-        date: new Date(),
-        description: `Supplier Payout: ${supplier.name}`,
-        amount: amount,
-        category: 'Supplies',
-        paymentMethod: paymentMethod,
-        notes: `From Supplier Ledger. ${paymentNote ? 'Ref: ' + paymentNote : ''}`,
-        addedBy: appCurrentUser?.name || appCurrentUser?.username || 'Operator',
-        createdAt: new Date()
-      };
-      await expensesService.create(newExpense as any);
-      useExpensesStore.getState().addExpense(newExpense as any);
+      const idempotencyKey = idempotencyKeyRef.current;
+
+      // The pay_supplier_atomic RPC will automatically create the Expense 
+      // and SupplierTransaction using this idempotencyKey.
 
       await suppliersService.recordPayment({
         supplier_id: supplier.id,
@@ -106,16 +103,17 @@ export function useSupplierLedger({ supplier, startDate, endDate, dateFilter }: 
         note: paymentNote,
         isManualOverride: isPaymentManualOverride,
         overrideBy: isPaymentManualOverride ? (appCurrentUser?.id || appCurrentUser?.username) : undefined,
-        expenseId: newExpense.id,
+        expenseId: idempotencyKey,
       });
       sonner.success('Payment recorded!');
       setShowPaymentModal(false);
       setIsPaymentManualOverride(false);
       loadLedger();
-    } catch (err) {
-      console.error(err);
-      sonner.error('Failed to submit payment.');
+    } catch (error: any) {
+      console.error('Payment Error:', error);
+      sonner.error(error.message || 'Failed to record payment');
     } finally {
+      processingLock.current = false;
       setFormLoading(false);
       sonner.close();
     }

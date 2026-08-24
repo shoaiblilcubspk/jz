@@ -165,7 +165,7 @@ export function useCheckoutData(onClose: () => void, onComplete: (sale: Sale) =>
     }
   };
 
-  const { handlePayment, isProcessing, setIsProcessing } = useCheckoutPayment({
+  const { handlePayment, isProcessing } = useCheckoutPayment({
     appSettings,
     checkoutCartItems,
     appSelectedCustomer,

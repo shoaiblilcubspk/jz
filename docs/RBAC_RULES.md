@@ -2297,3 +2297,26 @@ NO UNAUTHORIZED FINANCIAL OR INVENTORY MOVEMENT.
 ADMIN CONTROLS.
 MANAGER OPERATES.
 CASHIER SELLS.
+
+============================================================
+67. CLOUD COLUMN COMPLETENESS — IDENTICAL DATA ON ALL DEVICES
+============================================================
+
+Supabase cloud is the ONLY source of truth. Every column of every business
+table MUST live in the cloud and be fully synced to every device.
+
+MANDATORY:
+
+- Every column defined in `SUPER_MASTER_SCHEMA.sql` MUST be stored in the cloud.
+  No business column may be device-local-only.
+- Every device, on every refresh, MUST receive the COMPLETE row — all columns,
+  no truncation, no client-side column filtering.
+- Mappers (`map*`, `toRemote*`) MUST account for every column. A column missing
+  from a mapper is a bug (extends Hard Rule #5).
+- A business column MUST NEVER be "hidden" from sync to save bandwidth or simplify UI.
+- Two devices refreshing at the same moment MUST show byte-identical business data.
+- If a column genuinely cannot be cloud-synced, it MUST be device-local ONLY and
+  explicitly listed (e.g. `pos_local_prefs.*`) — never a business column.
+- ALL COLUMNS IN = ALL COLUMNS OUT. No partial column sync.
+
+This reinforces CLOUD DATA SYNC RULES (lines 13–92) and §54 integrity checks.

@@ -3,6 +3,7 @@ import { Save, RefreshCw } from 'lucide-react';
 import { Supplier } from '../../../types';
 import { Modal } from '../../../shared/ui/Modal';
 import { Button, Select } from '../../../shared/ui';
+import { useActionGuard } from '../../../hooks/useActionGuard';
 
 interface SupplierModalProps {
   isOpen: boolean;
@@ -12,7 +13,6 @@ interface SupplierModalProps {
 }
 
 export function SupplierModal({ isOpen, onClose, onSave, supplier }: SupplierModalProps) {
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<Partial<Supplier>>({
     name: '',
     phone: '',
@@ -45,18 +45,15 @@ export function SupplierModal({ isOpen, onClose, onSave, supplier }: SupplierMod
     }
   }, [supplier, isOpen]);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const { isProcessing: isSubmitting, guardedAction: handleSubmit } = useActionGuard(async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
     try {
       await onSave(formData);
       onClose();
     } catch (error) {
       console.error('Failed to save supplier:', error);
-    } finally {
-      setIsSubmitting(false);
     }
-  };
+  });
 
   if (!isOpen) return null;
 
@@ -72,14 +69,10 @@ export function SupplierModal({ isOpen, onClose, onSave, supplier }: SupplierMod
       <Button
         type="submit"
         form="supplier-form"
-        disabled={isSubmitting}
+        loading={isSubmitting}
+        icon={<Save className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />}
         className="flex-1 sm:flex-none sm:min-w-[240px] !py-2.5 sm:!py-3.5 !text-[9px] sm:!text-[11px]"
       >
-        {isSubmitting ? (
-          <RefreshCw className="h-4 w-4 sm:h-5 sm:w-5 animate-spin shrink-0" />
-        ) : (
-          <Save className="h-4 w-4 sm:h-5 sm:w-5 shrink-0" />
-        )}
         <span className="leading-none ml-2">
           {supplier ? "UPDATE PARTNER" : "REGISTER PARTNER"}
         </span>

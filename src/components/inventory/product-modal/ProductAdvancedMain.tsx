@@ -33,7 +33,7 @@ export function ProductAdvanced({
     <div className="space-y-6 pt-4 border-t border-gray-200 dark:border-white/5">
       <h3 className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest flex items-center gap-3">
         <span className="w-8 h-px bg-gray-200 dark:bg-white/10"></span>
-        {"universal_pos_enhancements"}
+        {"Universal Pos Enhancements"}
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -47,7 +47,7 @@ export function ProductAdvanced({
           />
           <div>
             <div className="text-xs font-black text-purple-900 dark:text-purple-200 uppercase tracking-wide flex items-center">
-              {"service_item"}
+              {"Service Item"}
               <HelpTooltip content="Flags this item as a non-physical service (e.g. repair fee, labor, consultation). Physical stock tracking will be automatically disabled, and sales will not trigger negative stock warnings." />
             </div>
             <div className="text-[10px] font-bold text-purple-600 dark:text-purple-400 uppercase tracking-widest mt-0.5">Labor, Delivery, Consultation (No Stock)</div>
@@ -64,7 +64,7 @@ export function ProductAdvanced({
           />
           <div>
             <div className="text-xs font-black text-orange-900 dark:text-orange-200 uppercase tracking-wide flex items-center">
-              {"require_serial_imei"}
+              {"Require Serial Imei"}
               <HelpTooltip content="When enabled, cashier will be prompted to enter or scan the device's unique Serial Number / IMEI before adding this item to the POS cart." />
             </div>
             <div className="text-[10px] font-bold text-orange-600 dark:text-orange-400 uppercase tracking-widest mt-0.5">Force scanner prompt at POS checkout</div>

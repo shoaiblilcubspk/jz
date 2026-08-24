@@ -14,7 +14,7 @@ interface Props {
   onSuccess?: (newBalance: number) => void;
 }
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export function ReceivePaymentModal({ customer, onClose, onSuccess }: Props) {
   const settings = useSettingsStore(s => s.settings);
@@ -30,6 +30,9 @@ export function ReceivePaymentModal({ customer, onClose, onSuccess }: Props) {
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
   const [liveBalance, setLiveBalance] = useState<number | null>(null);
+  
+  // Stable idempotency key for this payment session
+  const idempotencyKey = useRef(`rcv_${customer.id}_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`);
 
   useEffect(() => {
     fetchCustomerLedger(customer.id).then(data => {
@@ -41,8 +44,13 @@ export function ReceivePaymentModal({ customer, onClose, onSuccess }: Props) {
   const balance = liveBalance !== null ? liveBalance : (customer.balance || 0);
   const amountNum = parseFloat(amount) || 0;
 
+  const processingLock = useRef(false);
+
   const handleSubmit = async () => {
+    if (processingLock.current) return;
     if (amountNum <= 0) { sonner.error('Amount must be greater than 0'); return; }
+    
+    processingLock.current = true;
     setLoading(true);
     try {
       const result = await receiveCustomerPayment({
@@ -52,6 +60,7 @@ export function ReceivePaymentModal({ customer, onClose, onSuccess }: Props) {
         paymentModeId: mode,
         reference: reference || undefined,
         note: note || undefined,
+        idempotencyKey: idempotencyKey.current,
       });
 
       // Update customer in store
@@ -63,6 +72,7 @@ export function ReceivePaymentModal({ customer, onClose, onSuccess }: Props) {
     } catch (e: any) {
       sonner.error(e?.message || 'Failed to receive payment');
     } finally {
+      processingLock.current = false;
       setLoading(false);
     }
   };
