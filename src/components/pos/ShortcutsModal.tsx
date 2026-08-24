@@ -21,6 +21,7 @@ export function ShortcutsModal({ isOpen, onClose }: ShortcutsModalProps) {
     { key: '1', label: "Select Cash", desc: "Select Cash as the payment method for the current sale.", icon: CreditCard },
     { key: '2', label: "Select Card", desc: "Select Card payment method for digital terminal swipe.", icon: CreditCard },
     { key: '3', label: "Select Online", desc: "Select Online payment method.", icon: CreditCard },
+    { key: '4', label: "Select Credit", desc: "Select Credit (Udhar) payment method (if enabled & customer selected).", icon: CreditCard },
     { key: '5', label: "Select Split Payment", desc: "Switch to split/mixed payment modes (e.g. Cash + Card).", icon: CreditCard },
     { key: 'E', label: "Exact Amount Match", desc: "Auto-fill the received amount to match the final net total.", icon: Check },
     { key: 'Enter', label: "Process & Save Sale", desc: "Complete payment verification and record sale to database.", icon: Check },

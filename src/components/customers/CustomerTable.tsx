@@ -173,6 +173,15 @@ export function CustomerTable({
                       >
                         <Edit className="w-3 h-3" />
                       </Button>
+                      <Button
+                        variant="ghost"
+                        onClick={(e) => { e.stopPropagation(); handleDeleteCustomer(customer.id); }}
+                        disabled={!canManageCustomers}
+                        aria-label="Delete customer"
+                        className="!min-h-0 !p-1.5 !rounded-lg !bg-red-50 dark:!bg-red-500/10 !text-red-600 disabled:!opacity-40"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </Button>
                     </div>
                   </div>
 

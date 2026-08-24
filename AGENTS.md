@@ -4,8 +4,12 @@
 
 ## Before Any Task
 1. Read `GEMINI.md` (rules — under 200 lines, read it fully)
-2. Check relevant source files
-3. Implement directly — no back-and-forth
+2. **MANDATORY: Read `docs/IMPACT_360.md` before writing a single line of code.**
+3. Create an **Impact Map** for your task to ensure ZERO MISSED ROOTS.
+4. Keep your Impact Map updated as you discover new dependencies.
+5. Work in a PLANNED manner based on the complete 360-degree impact.
+6. Check relevant source files based on your discovery.
+7. Implement directly — no back-and-forth, but never skip the discovery phase.
 
 ## Hard Limits
 - **File size: 300 lines MAX.** Split if bigger.

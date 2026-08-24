@@ -1,4 +1,4 @@
-import { Check, AlertCircle, FileText, Wallet, PlusCircle, UserCircle } from 'lucide-react';
+import { Check, AlertCircle, FileText, Wallet, PlusCircle, UserCircle, Info } from 'lucide-react';
 import { formatCurrency } from '../../../lib/currencies';
 import { HelpTooltip } from '../../../shared/ui/HelpTooltip';
 import { SearchableSelect } from '../../../shared/ui/SearchableSelect';
@@ -199,7 +199,16 @@ export function PaymentForm({
                 </button>
               ))}
             </div>
-
+            {paymentMethod === 'credit' && (
+              <div className="mt-4 p-3 bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 rounded-xl flex items-start gap-2 animate-in fade-in slide-in-from-top-2">
+                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+                <p className="text-[9.5px] font-bold text-blue-800 dark:text-blue-200 leading-snug">
+                  <span className="uppercase tracking-wide opacity-80 block mb-0.5">Partial Udhar / Half Pay?</span>
+                  Is system mein Cash Drawer ko safe rakhne ke liye partial udhar ka direct option nahi. <br/><br/>
+                  <span className="text-blue-900 dark:text-blue-100">Tareeqa:</span> Pehle yeh bill poora <b>Credit</b> pe save karein. Phir <b>Customers</b> page par ja kar <b>Receive Payment</b> dabayen aur cash amount enter kar dein.
+                </p>
+              </div>
+            )}
             {/* Change / Due Display (Always visible, solves blank area issue) */}
             <div className={`p-4 rounded-2xl flex items-center justify-between border transition-all duration-300 animate-in fade-in zoom-in-95 ${change >= 0 ? 'bg-primary/10 border-transparent text-primary dark:text-emerald-400' : 'bg-amber-500/10 border-transparent text-amber-600 dark:text-amber-400'
               }`}>

@@ -44,12 +44,12 @@ export function useReportsData(subTab: string | undefined) {
   };
 
   const filterProps = useReportFilters(appSettings, appSales, appExpenses, appPayments, appProducts);
-  const { validStartDate, validEndDate, filteredSales, filteredExpenses, reportSales, reportExpenses, dateRange } = filterProps;
+  const { validStartDate, validEndDate, filteredSales, filteredExpenses, filteredPayments, reportSales, reportExpenses, dateRange } = filterProps;
 
   const salesStats = useSalesStats(filteredSales, appSettings);
   const expenseStats = useExpenseStats(filteredExpenses, validStartDate, validEndDate, dateRange, appSettings);
   const peopleStats = usePeopleStats(filteredSales, appCustomers, appSalesmen);
-  const financialStats = useFinancialStats(filteredSales, filteredExpenses);
+  const financialStats = useFinancialStats(filteredSales, filteredExpenses, filteredPayments, appSettings);
   const inventoryStats = useInventoryStats(appProducts, filteredSales, reportType);
 
   const cashiers = useMemo(() => {

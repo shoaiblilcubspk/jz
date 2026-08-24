@@ -1,4 +1,4 @@
-import { useInventoryStore } from '../../stores';
+import { useInventoryStore, useCustomersStore } from '../../stores';
 import { useState, useEffect } from 'react';
 import { Save } from 'lucide-react';
 import { Customer } from '../../types';
@@ -90,11 +90,14 @@ export function CustomerModal({ isOpen, onClose, customer }: CustomerModalProps)
 
     setIsSubmitting(true);
     try {
+      const { customersService } = await import('../../lib/services');
       if (customer) {
-        await useCustomersStore.getState().updateCustomer({ ...customer, ...customerData });
+        const updated = await customersService.update(customer.id, customerData);
+        await useCustomersStore.getState().updateCustomer(updated);
         sonner.success("Customer Updated");
       } else {
-        await useCustomersStore.getState().addCustomer(customerData as Customer);
+        const created = await customersService.create(customerData as Omit<Customer, 'id'>);
+        await useCustomersStore.getState().addCustomer(created);
         sonner.success("Customer Added");
       }
       onClose();

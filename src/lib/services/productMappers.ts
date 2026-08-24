@@ -1,6 +1,9 @@
 import {
   Product,
   ProductAddon,
+  Category,
+  Topping,
+  ProductTopping,
 } from '../../types';
 
 export const mapProduct = (item: any): Product => ({
@@ -71,3 +74,15 @@ export const toRemoteProduct = (p: Partial<Product>) => {
 
   return remote;
 };
+
+
+
+export const mapProductTopping = (item: any): ProductTopping => ({
+  id: item.id,
+  productId: item.product_id ?? item.productId,
+  toppingId: item.topping_id ?? item.toppingId,
+  isDefault: item.is_default ?? item.isDefault ?? false,
+  maxAllowed: item.max_allowed ?? item.maxAllowed ?? 1,
+  createdAt: item.created_at ? new Date(item.created_at) : (item.createdAt ? new Date(item.createdAt) : new Date()),
+});
+

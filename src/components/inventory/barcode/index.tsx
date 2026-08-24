@@ -117,9 +117,21 @@ export function BarcodeGenerator({ products, onClose, onProductsChange }: Barcod
         return () => window.removeEventListener('resize', calcAutoScale);
     }, [calcAutoScale]);
 
+    const getPageStyle = () => {
+        if (paperSize === 'A4') {
+            return `@page { size: A4 portrait; margin: 0; }`;
+        }
+        const match = paperSize.match(/Thermal-(\d+)x(\d+)/);
+        if (match) {
+            return `@page { size: ${match[1]}mm ${match[2]}mm; margin: 0; } body { margin: 0; }`;
+        }
+        return `@page { margin: 0; }`;
+    };
+
     const handlePrintFn = useReactToPrint({
         content: () => componentRef.current,
         documentTitle: `Barcodes_${new Date().getTime()}`,
+        pageStyle: getPageStyle(),
     });
 
     const handlePrint = () => {
@@ -133,6 +145,7 @@ export function BarcodeGenerator({ products, onClose, onProductsChange }: Barcod
 
     const renderCard = (product: Product, labelId: string) => (
         <BarcodeCard
+            key={labelId}
             product={product}
             labelId={labelId}
             isThermal={isThermal}

@@ -108,6 +108,8 @@ export function syncFormDataFromSettings(appSettings: any) {
     wholesaleEnabled: !!appSettings?.wholesaleEnabled,
     touchKeyboardEnabled: !!appSettings?.touchKeyboardEnabled,
     soundEnabled: !!appSettings?.soundEnabled,
+    enableKotPrinter: !!appSettings?.enableKotPrinter,
+    autoSaveReceiptPng: !!appSettings?.autoSaveReceiptPng,
     taxId: appSettings?.taxId || '',
     country: appSettings?.country || 'PK',
     theme: (appSettings as any)?.theme || 'dark',

@@ -24,7 +24,7 @@ export function useCheckoutData(onClose: () => void, onComplete: (sale: Sale) =>
   const appActiveSalesTab = useCartStore(s => s.activeSalesTab);
   const appBundles = useAppStore(s => s.bundles);
 
-  useAuth();
+  const { profile } = useAuth();
   const _generateInvoice = useInvoiceGeneration();
 
   const [paymentMethod, setPaymentMethod] = useState('cash');
@@ -155,7 +155,7 @@ export function useCheckoutData(onClose: () => void, onComplete: (sale: Sale) =>
     const paid = parseFloat(amountPaid) || 0;
     switch (paymentMethod) {
       case 'cash': return paid >= finalTotal;
-      case 'card': case 'online': return true;
+      case 'card': case 'online': case 'credit': return true;
       case 'split': {
         const a = parseFloat(splitAmountA) || 0;
         const b = parseFloat(splitAmountB) || 0;
@@ -216,10 +216,20 @@ export function useCheckoutData(onClose: () => void, onComplete: (sale: Sale) =>
     { id: 'wholesale', label: 'Wholesale', icon: Package, enabled: wholesaleEnabled },
   ].filter(st => st.enabled);
 
+  const isCreditAllowed = useMemo(() => {
+    if (!appSettings.enableCreditSales) return false;
+    if (!appSelectedCustomer) return false;
+    if (appSelectedCustomer.allow_credit === false || appSelectedCustomer.allowCredit === false) return false;
+    const role = profile?.role || 'cashier';
+    if (role === 'cashier' && !appSettings.cashierCanCredit) return false;
+    return true;
+  }, [appSettings.enableCreditSales, appSettings.cashierCanCredit, appSelectedCustomer, profile]);
+
   const payMethods = [
     { id: 'cash', label: 'Cash', icon: Banknote },
     { id: 'card', label: 'Card', icon: CreditCard },
     { id: 'online', label: 'Online Wallet', icon: Building2 },
+    ...(isCreditAllowed ? [{ id: 'credit', label: 'Credit (Udhar)', icon: Store }] : []),
     { id: 'split', label: 'Split', icon: Layers },
   ];
 

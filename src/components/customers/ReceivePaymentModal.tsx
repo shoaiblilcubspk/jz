@@ -3,7 +3,7 @@ import { CreditCard, DollarSign, FileText } from 'lucide-react';
 import { Modal } from '../../shared/ui/Modal';
 import { Button } from '../../shared/ui';
 import { Customer } from '../../types';
-import { receiveCustomerPayment } from '../../lib/services/customerLedgerService';
+import { receiveCustomerPayment, fetchCustomerLedger } from '../../lib/services/customerLedgerService';
 import { useSettingsStore, useCustomersStore } from '../../stores';
 import { formatCurrency } from '../../lib/currencies';
 import { sonner } from '../../lib/sonner';
@@ -14,25 +14,31 @@ interface Props {
   onSuccess?: (newBalance: number) => void;
 }
 
-const PAYMENT_MODES = [
-  { id: 'cash', label: 'Cash' },
-  { id: 'bank', label: 'Bank Transfer' },
-  { id: 'cheque', label: 'Cheque' },
-  { id: 'online', label: 'Online' },
-];
+import { useEffect } from 'react';
 
 export function ReceivePaymentModal({ customer, onClose, onSuccess }: Props) {
   const settings = useSettingsStore(s => s.settings);
   const updateCustomer = useCustomersStore(s => s.updateCustomer);
   const currency = settings?.currency || 'PKR';
 
+  const paymentModes = useSettingsStore(s => s.paymentModes) || [];
+  const activeModes = paymentModes.filter(m => m.enabled !== false);
+
   const [amount, setAmount] = useState('');
-  const [mode, setMode] = useState('cash');
+  const [mode, setMode] = useState(activeModes.length > 0 ? activeModes[0].id : 'cash');
   const [reference, setReference] = useState('');
   const [note, setNote] = useState('');
   const [loading, setLoading] = useState(false);
+  const [liveBalance, setLiveBalance] = useState<number | null>(null);
 
-  const balance = customer.balance || 0;
+  useEffect(() => {
+    fetchCustomerLedger(customer.id).then(data => {
+      data.sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      if (data.length > 0) setLiveBalance(data[0].balanceAfter);
+    }).catch(() => {});
+  }, [customer.id]);
+
+  const balance = liveBalance !== null ? liveBalance : (customer.balance || 0);
   const amountNum = parseFloat(amount) || 0;
 
   const handleSubmit = async () => {
@@ -43,6 +49,7 @@ export function ReceivePaymentModal({ customer, onClose, onSuccess }: Props) {
         customerId: customer.id,
         amount: amountNum,
         paymentMode: mode,
+        paymentModeId: mode,
         reference: reference || undefined,
         note: note || undefined,
       });
@@ -117,8 +124,8 @@ export function ReceivePaymentModal({ customer, onClose, onSuccess }: Props) {
         {/* Payment Mode */}
         <div>
           <label className="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">Payment Method</label>
-          <div className="grid grid-cols-4 gap-1.5">
-            {PAYMENT_MODES.map(m => (
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+            {activeModes.map(m => (
               <button
                 key={m.id}
                 onClick={() => setMode(m.id)}
@@ -128,7 +135,7 @@ export function ReceivePaymentModal({ customer, onClose, onSuccess }: Props) {
                     : 'bg-white dark:bg-white/5 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-white/10 hover:border-indigo-400'
                 }`}
               >
-                {m.label}
+                {m.name || m.label || m.id}
               </button>
             ))}
           </div>

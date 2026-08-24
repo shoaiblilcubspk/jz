@@ -125,11 +125,12 @@ export function SalesReport({
           <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
           {"Expected Wallet Balances (Sales − Expenses)"}
         </h3>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+        <div className={`grid grid-cols-1 sm:grid-cols-3 ${walletStats.length === 4 ? 'lg:grid-cols-4' : 'lg:grid-cols-3'} gap-4 lg:gap-6`}>
           {walletStats.map(wallet => (
             <div key={wallet.method} className={`p-5 rounded-3xl border border-white/10 shadow-xl transition-all group overflow-hidden relative ${
                 wallet.method === 'cash' ? 'bg-gradient-to-br from-emerald-500 to-teal-700' :
                 wallet.method === 'card' ? 'bg-gradient-to-br from-blue-500 to-indigo-700' :
+                wallet.method === 'credit' ? 'bg-gradient-to-br from-amber-600 to-orange-800' :
                 'bg-gradient-to-br from-cyan-600 to-blue-800'
               }`}>
               <div className="absolute top-0 right-0 w-24 h-24 opacity-20 transition-opacity group-hover:opacity-40 bg-white"></div>
@@ -148,27 +149,37 @@ export function SalesReport({
                   <div className="pl-2 border-l border-white/10 space-y-0.5 text-[8px] text-white/70 font-bold">
                     {(retailEnabled ?? true) && (wallet.retailSales > 0 || (wallet.retailSales === 0 && wallet.wholesaleSales === 0)) && (
                       <div className="flex justify-between items-center">
-                        <span className="opacity-80">{"Retail"}</span>
+                        <span>Retail</span>
                         <span>{formatCurrency(wallet.retailSales, currency)}</span>
                       </div>
                     )}
                     {wholesaleEnabled && wallet.wholesaleSales > 0 && (
                       <div className="flex justify-between items-center">
-                        <span className="opacity-80">{"Wholesale"}</span>
+                        <span>Wholesale</span>
                         <span>{formatCurrency(wallet.wholesaleSales, currency)}</span>
                       </div>
                     )}
                   </div>
-
-                  <div className="flex justify-between items-end">
-                    <span className="text-[9px] font-black text-white/60 uppercase tracking-widest">{"Expenses"}</span>
-                    <span className="text-xs font-black text-white/90">− {formatCurrency(wallet.expenses, currency)}</span>
-                  </div>
+                  
+                  {wallet.method !== 'credit' && (
+                    <div className="flex justify-between items-end pt-1">
+                      <span className="text-[9px] font-black text-white/60 uppercase tracking-widest">{"Expenses"}</span>
+                      <span className="text-xs font-black text-white">-{formatCurrency(wallet.expenses + wallet.refunds, currency)}</span>
+                    </div>
+                  )}
+                  {wallet.method === 'credit' && (
+                    <div className="flex justify-between items-end pt-1">
+                      <span className="text-[9px] font-black text-white/60 uppercase tracking-widest">{"Recovered"}</span>
+                      <span className="text-xs font-black text-white">-{formatCurrency(wallet.customerPayments || 0, currency)}</span>
+                    </div>
+                  )}
                 </div>
-
-                <div className="pt-3 border-t border-white/10 flex justify-between items-end">
-                  <span className="text-[10px] font-black text-white/50 uppercase tracking-widest">{"EXPECTED"}</span>
-                  <span className="text-xl font-black text-white">{formatCurrency(wallet.net, currency)}</span>
+                
+                <div className="pt-3 mt-1 border-t border-white/20">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-black text-white/90 uppercase tracking-widest">{wallet.method === 'credit' ? "Pending Debt" : "Expected"}</span>
+                    <span className="text-lg font-black text-white">{formatCurrency(wallet.net, currency)}</span>
+                  </div>
                 </div>
               </div>
             </div>

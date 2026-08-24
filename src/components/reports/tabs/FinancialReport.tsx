@@ -8,6 +8,7 @@ interface WalletStat {
   sales: number;
   refunds: number;
   expenses: number;
+  customerPayments?: number;
   net: number;
 }
 
@@ -108,11 +109,12 @@ export function FinancialReport({
           <span className="w-1.5 h-4 bg-violet-600 rounded-full inline-block shadow-lg shadow-violet-600/20"></span>
           {"Wallet-wise Summary (Net Cash Movement)"}
         </h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-3 gap-6">
+        <div className={`grid grid-cols-1 md:grid-cols-3 ${walletStats.length === 4 ? 'xl:grid-cols-4' : 'xl:grid-cols-3'} gap-6`}>
           {[
             { method: 'cash', label: "Cash Wallet", icon: <Banknote className="h-6 w-6" />, color: 'text-primary', accent: 'emerald', bg: 'bg-primary/10 dark:bg-primary/5', bar: 'bg-primary', stats: walletStats.find(w => w.method === 'cash') },
             { method: 'card', label: "Card Wallet", icon: <CreditCard className="h-6 w-6" />, color: 'text-blue-500', accent: 'blue', bg: 'bg-blue-500/10 dark:bg-blue-500/5', bar: 'bg-blue-500', stats: walletStats.find(w => w.method === 'card') },
-            { method: 'online', label: "Online Wallet", icon: <Building2 className="h-6 w-6" />, color: 'text-cyan-500', accent: 'cyan', bg: 'bg-cyan-500/10 dark:bg-cyan-500/5', bar: 'bg-cyan-500', stats: walletStats.find(w => w.method === 'online') }
+            { method: 'online', label: "Online Wallet", icon: <Building2 className="h-6 w-6" />, color: 'text-cyan-500', accent: 'cyan', bg: 'bg-cyan-500/10 dark:bg-cyan-500/5', bar: 'bg-cyan-500', stats: walletStats.find(w => w.method === 'online') },
+            ...(walletStats.some(w => w.method === 'credit') ? [{ method: 'credit', label: "Credit Wallet", icon: <Wallet className="h-6 w-6" />, color: 'text-amber-500', accent: 'amber', bg: 'bg-amber-500/10 dark:bg-amber-500/5', bar: 'bg-amber-500', stats: walletStats.find(w => w.method === 'credit') }] : [])
           ].map((w, i) => (
             <div key={i} className="group relative p-6 rounded-[1.5rem] border border-white/5 bg-gradient-to-br from-white to-gray-50 dark:from-[#171717] dark:to-[#111] shadow-xl hover:scale-[1.02] transition-all duration-300">
               <div className="flex items-center justify-between mb-6">
@@ -126,17 +128,27 @@ export function FinancialReport({
               </div>
               <div className="space-y-4">
                 <div className="flex justify-between items-center px-1">
-                  <span className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">{"Total Sales"}</span>
+                  <span className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">{w.method === 'credit' ? "Credit Given" : "Total Sales"}</span>
                   <span className="text-sm font-black text-primary dark:text-emerald-400">+{formatCurrency(w.stats?.sales || 0, currency)}</span>
                 </div>
-                <div className="flex justify-between items-center px-1">
-                  <span className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">{"Total Refunds"}</span>
-                  <span className="text-sm font-black text-rose-500">-{formatCurrency(w.stats?.refunds || 0, currency)}</span>
-                </div>
-                <div className="flex justify-between items-center px-1">
-                  <span className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">{"Total Expenses"}</span>
-                  <span className="text-sm font-black text-rose-500">-{formatCurrency(w.stats?.expenses || 0, currency)}</span>
-                </div>
+                {w.method !== 'credit' && (
+                  <>
+                    <div className="flex justify-between items-center px-1">
+                      <span className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">{"Total Refunds"}</span>
+                      <span className="text-sm font-black text-rose-500">-{formatCurrency(w.stats?.refunds || 0, currency)}</span>
+                    </div>
+                    <div className="flex justify-between items-center px-1">
+                      <span className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">{"Total Expenses"}</span>
+                      <span className="text-sm font-black text-rose-500">-{formatCurrency(w.stats?.expenses || 0, currency)}</span>
+                    </div>
+                  </>
+                )}
+                {(w.stats?.customerPayments || 0) > 0 && (
+                  <div className="flex justify-between items-center px-1">
+                    <span className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase tracking-widest">{w.method === 'credit' ? "Credit Recovered" : "Credit Received"}</span>
+                    <span className={`text-sm font-black ${w.method === 'credit' ? 'text-rose-500' : 'text-blue-500'}`}>{w.method === 'credit' ? '-' : '+'}{formatCurrency(w.stats?.customerPayments || 0, currency)}</span>
+                  </div>
+                )}
                 <div className="relative pt-4 mt-4 border-t border-gray-200 dark:border-white/5">
                   <div className={`absolute top-0 left-0 w-8 h-[2px] ${w.bar} -translate-y-[1px]`}></div>
                   <div className="flex justify-between items-center px-1">

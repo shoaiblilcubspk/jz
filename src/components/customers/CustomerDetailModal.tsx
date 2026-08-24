@@ -42,13 +42,15 @@ export function CustomerDetailModal({ customer: initialCustomer, onClose }: Cust
   }, [appSales, customer.id]);
 
   const totalTransactions = customerTransactions.length;
+  const validTransactions = customerTransactions.filter(s => s.status !== 'deleted');
+  const totalOrders = validTransactions.length;
   const totalSpent = customerTransactions.reduce((sum, sale) => sum + getEffectiveTotal(sale), 0);
-  const averageTransaction = totalTransactions > 0 ? totalSpent / totalTransactions : 0;
+  const averageTransaction = totalOrders > 0 ? totalSpent / totalOrders : 0;
   const { page: paidPage, totalPages: paidTotalPages, pageItems: paidPageItems, goToPage: goToPaidPage, pageSize: paidPageSize, setPageSize: setPaidPageSize } = usePagination(customerTransactions, 10);
 
   const footer = (
     <div className="flex items-center gap-2 sm:gap-3 w-full">
-      {can(userRole, 'receive_payment') && (customer.balance || 0) > 0 && (
+      {can(userRole, 'receive_payment') && (
         <Button
           variant="primary"
           onClick={() => setShowReceivePayment(true)}
@@ -108,7 +110,7 @@ export function CustomerDetailModal({ customer: initialCustomer, onClose }: Cust
                 </div>
                 <div className="bg-blue-500/5 border border-blue-500/10 p-5 rounded-[1.5rem] relative overflow-hidden">
                   <p className="text-blue-600/60 dark:text-blue-400/60 text-[9px] font-black uppercase tracking-[0.2em] mb-1">{"total_orders"}</p>
-                  <p className="text-xl font-black text-blue-600 dark:text-blue-400">{totalTransactions}</p>
+                  <p className="text-xl font-black text-blue-600 dark:text-blue-400">{totalOrders}</p>
                   <Receipt className="absolute -bottom-2 -right-2 h-12 w-12 text-blue-500/10" />
                 </div>
                 <div className="bg-indigo-500/5 border border-indigo-500/10 p-5 rounded-[1.5rem] relative overflow-hidden">

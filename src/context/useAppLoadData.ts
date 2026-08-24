@@ -13,6 +13,16 @@ import {
   mapDiscount,
   mapPurchaseRecord,
   mapPaymentMode,
+  mapPurchaseOrder,
+  mapPurchaseOrderItem,
+  mapSupplierTransaction,
+  mapCategory,
+  mapTopping,
+  mapProductTopping,
+  mapBundle,
+  mapBundleItem,
+  mapProductAddon,
+  mapSupplier,
   salesTabsService
 } from '../lib/services';
 import { mapStockHistory, mapVariantStockHistory } from '../lib/services/stockMappers';
@@ -130,11 +140,11 @@ export function useAppLoadData(initialized: boolean, setInitialized: React.Dispa
         cloudFetch('payment_modes', mapPaymentMode),
         cloudFetch('expenses', mapExpense),
         cloudFetch('purchase_records', mapPurchaseRecord),
-        cloudFetch('purchase_orders'),
-        cloudFetch('suppliers'),
-        cloudFetch('supplier_transactions'),
-        cloudFetch('categories'),
-        cloudFetch('bundles'),
+        cloudFetch('purchase_orders', mapPurchaseOrder),
+        cloudFetch('suppliers', mapSupplier),
+        cloudFetch('supplier_transactions', mapSupplierTransaction),
+        cloudFetch('categories', mapCategory),
+        cloudFetch('bundles', mapBundle),
         (async () => {
           const { data, error } = await supabase.from('app_settings').select('*').eq('id', SETTINGS_ID).single();
           if (error) throw error;
@@ -145,11 +155,11 @@ export function useAppLoadData(initialized: boolean, setInitialized: React.Dispa
         user ? salesTabsService.getByUserId(user.id).catch(() => []) : Promise.resolve([]),
         cloudFetch('payments', (r: any) => r, { order: 'created_at', limit: 1000 }),
         cloudFetch('variant_stock_history', mapVariantStockHistory, { order: 'created_at', limit: 2000 }),
-        cloudFetch('toppings'),
-        cloudFetch('bundle_items'),
-        cloudFetch('purchase_order_items'),
-        cloudFetch('product_addons'),
-        cloudFetch('product_toppings'),
+        cloudFetch('toppings', mapTopping),
+        cloudFetch('bundle_items', mapBundleItem),
+        cloudFetch('purchase_order_items', mapPurchaseOrderItem),
+        cloudFetch('product_addons', mapProductAddon),
+        cloudFetch('product_toppings', mapProductTopping),
         cloudFetch('customer_ledger', mapCustomerLedger),
       ]);
 
@@ -204,7 +214,7 @@ export function useAppLoadData(initialized: boolean, setInitialized: React.Dispa
         localDb.purchaseOrderItems.clear().then(() => purchaseOrderItems.length ? localDb.purchaseOrderItems.bulkPut(purchaseOrderItems) : Promise.resolve()),
         localDb.productAddons.clear().then(() => productAddons.length ? localDb.productAddons.bulkPut(productAddons) : Promise.resolve()),
         localDb.customerLedger.clear().then(() => customerLedger.length ? localDb.customerLedger.bulkPut(customerLedger) : Promise.resolve()),
-        localDb.appSettings.clear().then(() => settingsRow ? localDb.appSettings.put({ ...settingsRow }) : Promise.resolve()),
+        localDb.appSettings.clear().then(() => settingsRow ? localDb.appSettings.put(mapSettings(settingsRow)) : Promise.resolve()),
         localDb.users.clear().then(() => users.length ? localDb.users.bulkPut(users) : Promise.resolve()),
       ]).catch(() => {});
 
@@ -218,6 +228,9 @@ export function useAppLoadData(initialized: boolean, setInitialized: React.Dispa
             const local = JSON.parse(localStr);
             if (local.posGridColumns !== undefined) dbSettings.posGridColumns = local.posGridColumns;
             if (local.theme !== undefined) dbSettings.theme = local.theme;
+            if (local.receiptPrinter !== undefined) dbSettings.receiptPrinter = local.receiptPrinter;
+            if (local.enableKotPrinter !== undefined) dbSettings.enableKotPrinter = local.enableKotPrinter;
+            if (local.autoSaveReceiptPng !== undefined) dbSettings.autoSaveReceiptPng = local.autoSaveReceiptPng;
           }
         } catch (e) {}
         useSettingsStore.getState().setSettings(dbSettings);

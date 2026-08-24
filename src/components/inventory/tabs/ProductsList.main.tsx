@@ -245,6 +245,7 @@ export function ProductsList({
         isAdmin={isAdmin}
         profile={profile}
         canManageStock={canManageStock}
+        canEditProduct={canEditProduct}
       />
 
       <BulkEditModal selectedIds={selectedProductIds} isOpen={showBulkEditModal} onClose={() => setShowBulkEditModal(false)} categories={categories} suppliers={suppliers} />

@@ -1,5 +1,7 @@
 import React from 'react';
-import { Button, ToggleSwitch } from '../../../shared/ui';
+import { Button } from '../../../shared/ui';
+import { ToggleSwitch } from '../../../shared/ui/ToggleSwitch';
+import { HelpTooltip } from '../../../shared/ui/HelpTooltip';
 import { Modal } from '../../../shared/ui/Modal';
 
 interface Props {
@@ -48,12 +50,12 @@ export function BillModal({
     >
       <div className="space-y-6">
         <div className="bg-rose-50 dark:bg-rose-500/10 border border-rose-100 dark:border-rose-500/20 p-4 rounded-2xl text-center">
-          <p className="text-[9px] text-rose-500 font-black uppercase tracking-widest">{t('this_will_increase_balance', 'THIS WILL INCREASE THE OUTSTANDING BALANCE')}</p>
+          <p className="text-[9px] text-rose-500 font-black uppercase tracking-widest">{'THIS WILL INCREASE THE OUTSTANDING BALANCE'}</p>
         </div>
 
         <div className="space-y-4">
           <div>
-            <label className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest mb-1.5 block ml-1">{t('bill_amount', 'Bill Amount *')}</label>
+            <label className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest mb-1.5 block ml-1">{'Bill Amount *'}</label>
             <input
               type="number"
               step="0.01"
@@ -64,7 +66,7 @@ export function BillModal({
             />
           </div>
           <div>
-            <label className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest mb-1.5 block ml-1">{t('note_reference', 'Note / Reference')}</label>
+            <label className="text-[10px] font-black text-gray-600 dark:text-gray-500 uppercase tracking-widest mb-1.5 block ml-1">{'Note / Reference'}</label>
             <input
               type="text"
               className="w-full bg-gray-50 dark:bg-black/75 border-none text-gray-900 dark:text-white text-sm rounded-xl px-5 py-3.5 focus:ring-2 focus:ring-emerald-500 outline-none font-bold"
@@ -76,8 +78,11 @@ export function BillModal({
 
           <div className="flex items-center justify-between bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 p-3.5 rounded-xl">
             <div className="flex-1">
-              <p className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest">{t('manual_override', 'Manual Override')}</p>
-              <p className="text-[9px] text-amber-600/70 dark:text-amber-500/60 mt-0.5">{t('override_desc', 'Admin amount correction — logged')}</p>
+              <div className="flex items-center gap-2">
+                <p className="text-[10px] font-black text-amber-700 dark:text-amber-400 uppercase tracking-widest">{'Manual Override'}</p>
+                <HelpTooltip content="Forces the system to accept irregular amounts (e.g., adding an arbitrary bill amount). Logs this action as an admin correction." />
+              </div>
+              <p className="text-[9px] text-amber-600/70 dark:text-amber-500/60 mt-0.5">{'Admin amount correction — logged'}</p>
             </div>
             <ToggleSwitch checked={isBillManualOverride} onChange={setIsBillManualOverride} color="bg-amber-500" />
           </div>

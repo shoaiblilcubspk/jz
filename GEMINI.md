@@ -112,6 +112,8 @@
 7. **Universal code.** Every fix works across ALL clones. No shop-specific code.
 8. **Time formatting.** Always `formatAppTime/Date/DateTime` from `src/lib/dateUtils.ts`. Never raw `toLocaleTimeString()`.
 9. **Cloud-Direct Local Caching.** Local IndexedDB must NEVER block object creation (duplicate fallback) if the cloud successfully verified it doesn't exist. Always use `.clear()` before `.bulkPut()` on startup to ensure exact parity with cloud and prevent stale UI ghosts (especially for new clone setups or wiped DBs).
+10. **360° UNIVERSAL IMPACT MAPPING — ZERO-MISSED-ROOT PROTOCOL.** Before writing code, you MUST read **`docs/IMPACT_360.md`**. Always create an Impact Map, find ALL existing relevant places, and keep the map updated when adding new features. Zero missed roots.
+
 
 ---
 

@@ -9,6 +9,7 @@ import {
   Cloud,
   Smartphone,
   Lock,
+  BookOpen
 } from 'lucide-react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ReceiptPrint } from '../pos/ReceiptPrint';
@@ -19,10 +20,11 @@ import { GeneralSettings } from './tabs/GeneralSettings';
 import { ReceiptSettings } from './tabs/ReceiptSettings';
 import { SecuritySettings } from './tabs/SecuritySettings';
 import { SystemSettings } from './tabs/SystemSettings';
+import { HowToUse } from './tabs/HowToUse';
 import type { SettingsTabProps } from './tabs/types';
 import { useSettingsForm } from './useSettingsForm';
 
-type TabType = 'general' | 'receipt' | 'backup' | 'security';
+type TabType = 'general' | 'receipt' | 'backup' | 'security' | 'how-to';
 
 export function Settings() {
   const navigate = useNavigate();
@@ -45,6 +47,7 @@ export function Settings() {
     { id: 'receipt', label: 'Receipt Design', icon: Printer },
     { id: 'security', label: 'Security & Account', icon: Shield },
     { id: 'backup', label: 'Backup & Restore', icon: Database },
+    { id: 'how-to', label: 'How To Use Guide', icon: BookOpen },
   ];
 
   const tabProps: SettingsTabProps = {
@@ -86,7 +89,7 @@ export function Settings() {
             {tabs.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
-              const tabColors: Record<string, string> = { general: '!bg-primary', receipt: '!bg-cyan-600', security: '!bg-blue-600', database: '!bg-indigo-600' };
+              const tabColors: Record<string, string> = { general: '!bg-primary', receipt: '!bg-cyan-600', security: '!bg-blue-600', backup: '!bg-indigo-600', 'how-to': '!bg-purple-600' };
               const activeColor = tabColors[tab.id] || '!bg-primary';
 
               return (
@@ -123,6 +126,7 @@ export function Settings() {
             {activeTab === 'backup' && <SystemSettings />}
             {activeTab === 'receipt' && <ReceiptSettings {...tabProps} />}
             {activeTab === 'security' && <SecuritySettings />}
+            {activeTab === 'how-to' && <HowToUse />}
           </form>
         </div>
       </div>

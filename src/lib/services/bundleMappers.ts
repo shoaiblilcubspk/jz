@@ -23,3 +23,11 @@ export const mapBundle = (row: any): Bundle => ({
   createdAt: row.created_at ? new Date(row.created_at) : new Date(),
   updatedAt: row.updated_at ? new Date(row.updated_at) : new Date(),
 });
+
+export const mapBundleItem = (bi: any): BundleItem => ({
+  id: bi.id,
+  bundleId: bi.bundle_id ?? bi.bundleId,
+  productId: bi.product_id ?? bi.productId,
+  quantity: Number(bi.quantity) || 1,
+  createdAt: bi.created_at ? new Date(bi.created_at) : (bi.createdAt ? new Date(bi.createdAt) : new Date()),
+});

@@ -62,6 +62,42 @@ export async function receiveCustomerPayment(params: {
   };
 }
 
+/** Refund payment to customer via RPC (atomic) */
+export async function refundCustomerPayment(params: {
+  customerId: string;
+  amount: number;
+  paymentMode?: string;
+  paymentModeId?: string;
+  reference?: string;
+  note?: string;
+  createdBy?: string;
+}): Promise<{ balanceBefore: number; balanceAfter: number; ledgerId: string }> {
+  const idempotencyKey = `ref_${params.customerId}_${Date.now()}_${generateId().slice(0, 8)}`;
+
+  const { data, error } = await supabase.rpc('refund_customer_payment', {
+    p_customer_id: params.customerId,
+    p_amount: params.amount,
+    p_payment_mode: params.paymentMode || 'cash',
+    p_payment_mode_id: params.paymentModeId || null,
+    p_reference: params.reference || null,
+    p_note: params.note || null,
+    p_created_by: params.createdBy || null,
+    p_idempotency_key: idempotencyKey,
+  });
+
+  if (error) throw error;
+  if (!data?.ok) throw new Error('refund_customer_payment RPC returned not ok');
+
+  // Update local cache
+  await localDb.customers.where('id').equals(params.customerId).modify({ balance: data.balance_after });
+
+  return {
+    balanceBefore: data.balance_before,
+    balanceAfter: data.balance_after,
+    ledgerId: data.ledger_id,
+  };
+}
+
 /** Manual ledger adjustment (Admin/Manager only) */
 export async function adjustCustomerLedger(params: {
   customerId: string;

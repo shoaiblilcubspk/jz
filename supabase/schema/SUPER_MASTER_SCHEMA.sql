@@ -42,6 +42,11 @@
 -- ════════════════════════════════════════════════════════════════
 -- Every structural DB change MUST be logged here AND in a migration file.
 --
+-- [2026-08-23] Add missing barcode qr columns
+--   Files: SUPER_MASTER_SCHEMA.sql, migration 20260823070000_add_barcode_qr_columns.sql
+--   Added barcode_show_barcode, barcode_show_qr, barcode_qr_size, and
+--   receipt_show_barcode to app_settings. Also merged them into CREATE TABLE.
+--
 -- [2026-08-23] Drop legacy users.permissions TEXT[] column
 --   Files: SUPER_MASTER_SCHEMA.sql, migration 20260823050000_drop_users_permissions_column.sql
 --   Tag-based permission system removed from code (readers/writers). Role matrix
@@ -335,8 +340,8 @@ CREATE TABLE IF NOT EXISTS app_settings (
     -- Receipt Display Settings
     receipt_paper_size          TEXT DEFAULT '80mm',
     receipt_density             TEXT DEFAULT 'normal',
-    receipt_header              TEXT,
-    receipt_footer              TEXT,
+    receipt_header              TEXT DEFAULT 'Welcome to our store...',
+    receipt_footer              TEXT DEFAULT 'Thank you for shopping!',
     receipt_show_logo           BOOLEAN DEFAULT true,
     receipt_show_footer         BOOLEAN DEFAULT true,
     receipt_show_tax            BOOLEAN DEFAULT true,
@@ -350,6 +355,7 @@ CREATE TABLE IF NOT EXISTS app_settings (
     receipt_show_notes          BOOLEAN DEFAULT true,
     receipt_show_delivery_address BOOLEAN DEFAULT true,
     receipt_show_qr_code        BOOLEAN DEFAULT true,
+    receipt_show_barcode        BOOLEAN DEFAULT false,
     receipt_template            TEXT DEFAULT 'modern',
     receipt_font_scale          DECIMAL(3,2) DEFAULT 1.00,
     receipt_font_bold           BOOLEAN DEFAULT false,
@@ -385,6 +391,9 @@ CREATE TABLE IF NOT EXISTS app_settings (
     barcode_gap_x               INTEGER DEFAULT 0,
     barcode_gap_y               INTEGER DEFAULT 0,
     barcode_bar_width           NUMERIC DEFAULT 1.2,
+    barcode_show_barcode        BOOLEAN DEFAULT true,
+    barcode_show_qr             BOOLEAN DEFAULT false,
+    barcode_qr_size             INTEGER DEFAULT 60,
 
     last_backup_date            TIMESTAMPTZ,
 
@@ -410,6 +419,15 @@ CREATE TABLE IF NOT EXISTS app_settings (
     enable_kot_printer          BOOLEAN DEFAULT false,
     default_sale_type           TEXT DEFAULT 'retail',
     language                    TEXT DEFAULT 'en',
+    
+    -- Credit Sales & Ledger System
+    enable_credit_sales         BOOLEAN DEFAULT true,
+    cashier_can_credit          BOOLEAN DEFAULT true,
+    
+    -- Purchase Orders Module
+    enable_purchase_orders      BOOLEAN DEFAULT true,
+    po_prefix                   TEXT DEFAULT 'PO',
+    po_counter                  INTEGER DEFAULT 1000,
 
     -- SaaS / Subscription
     subscription_tier           TEXT DEFAULT 'free',
@@ -478,6 +496,7 @@ CREATE TABLE IF NOT EXISTS customers (
     price_tier              TEXT DEFAULT 'retail',
     credit_limit            DECIMAL(10,2) DEFAULT 0.00,
     credit_used             DECIMAL(10,2) DEFAULT 0.00,
+    allow_credit            BOOLEAN DEFAULT true,
     total_purchases         DECIMAL(12,2) DEFAULT 0.00,
     balance                 DECIMAL(12,2) DEFAULT 0,
     last_purchase           TIMESTAMPTZ,
@@ -1133,8 +1152,11 @@ BEGIN
     SELECT 1 FROM row_tombstones
     WHERE table_name = TG_TABLE_NAME AND ref_id = NEW.id
   ) THEN
-    RAISE EXCEPTION 'STALE_WRITE: record % was deleted from % on another device (or this one). Refresh from cloud — this stale write was rejected.', NEW.id, TG_TABLE_NAME
-      USING ERRCODE = 'P0007';
+    -- Allow internal cascade (e.g., ON DELETE SET NULL) which runs at depth > 0
+    IF pg_trigger_depth() = 0 THEN
+      RAISE EXCEPTION 'STALE_WRITE: record % was deleted from % on another device (or this one). Refresh from cloud — this stale write was rejected.', NEW.id, TG_TABLE_NAME
+        USING ERRCODE = 'P0007';
+    END IF;
   END IF;
   -- (b) Newest-wins: reject writes older than the stored row.
   IF TG_OP = 'UPDATE' AND NEW.updated_at < OLD.updated_at THEN
@@ -1750,6 +1772,16 @@ ALTER TABLE app_settings
   ADD COLUMN IF NOT EXISTS allow_credit_over_limit        BOOLEAN DEFAULT true,
   ADD COLUMN IF NOT EXISTS pos_grid_columns               INTEGER DEFAULT 4,
   ADD COLUMN IF NOT EXISTS allow_negative_stock            BOOLEAN DEFAULT true,
+  ADD COLUMN IF NOT EXISTS enable_credit_sales            BOOLEAN DEFAULT true,
+  ADD COLUMN IF NOT EXISTS cashier_can_credit             BOOLEAN DEFAULT true,
+  ADD COLUMN IF NOT EXISTS enable_purchase_orders         BOOLEAN DEFAULT true,
+  ADD COLUMN IF NOT EXISTS po_prefix                      TEXT DEFAULT 'PO',
+  ADD COLUMN IF NOT EXISTS po_counter                     INTEGER DEFAULT 1000,
+  ADD COLUMN IF NOT EXISTS barcode_bar_width              NUMERIC DEFAULT 0.8,
+  ADD COLUMN IF NOT EXISTS barcode_show_barcode           BOOLEAN DEFAULT true,
+  ADD COLUMN IF NOT EXISTS barcode_show_qr                BOOLEAN DEFAULT false,
+  ADD COLUMN IF NOT EXISTS barcode_qr_size                INTEGER DEFAULT 60,
+  ADD COLUMN IF NOT EXISTS receipt_show_barcode           BOOLEAN DEFAULT false,
   ADD COLUMN IF NOT EXISTS refund_approval_threshold       NUMERIC NOT NULL DEFAULT 5000;
 
 DO $$
@@ -3967,11 +3999,11 @@ DECLARE
   v_id uuid;
 BEGIN
   INSERT INTO expenses (
-    id, category_id, amount, date, description, added_by, payment_mode, created_at, updated_at
+    id, category, amount, date, description, added_by, payment_method, created_at, updated_at
   ) VALUES (
-    (p_expense->>'id')::uuid, (p_expense->>'category_id')::uuid, (p_expense->>'amount')::numeric,
+    (p_expense->>'id')::uuid, p_expense->>'category', (p_expense->>'amount')::numeric,
     COALESCE((p_expense->>'date')::timestamptz, now()), p_expense->>'description', p_expense->>'added_by',
-    p_expense->>'payment_mode', COALESCE((p_expense->>'created_at')::timestamptz, now()), now()
+    p_expense->>'payment_method', COALESCE((p_expense->>'created_at')::timestamptz, now()), now()
   ) ON CONFLICT (id) DO NOTHING RETURNING id INTO v_id;
 
   IF v_id IS NULL THEN v_id := (p_expense->>'id')::uuid; END IF;
@@ -4004,6 +4036,109 @@ END;
 $$;
 
 
+-- [2026-08-23] Customer Ledger System (receive_customer_payment, sync trigger)
+--   Migration: 20260823060000_customer_ledger_system.sql
+CREATE OR REPLACE FUNCTION fn_sync_customer_balance()
+RETURNS TRIGGER LANGUAGE plpgsql AS $$
+BEGIN
+  UPDATE customers
+    SET balance = NEW.balance_after,
+        updated_at = now()
+  WHERE id = NEW.customer_id;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trig_sync_customer_balance ON customer_ledger;
+CREATE TRIGGER trig_sync_customer_balance
+  AFTER INSERT ON customer_ledger
+  FOR EACH ROW EXECUTE FUNCTION fn_sync_customer_balance();
+
+
+CREATE OR REPLACE FUNCTION receive_customer_payment(
+  p_customer_id    uuid,
+  p_amount         numeric,
+  p_payment_mode   text     DEFAULT 'cash',
+  p_payment_mode_id text    DEFAULT NULL,
+  p_reference      text     DEFAULT NULL,
+  p_note           text     DEFAULT NULL,
+  p_created_by     uuid     DEFAULT NULL,
+  p_idempotency_key text    DEFAULT NULL
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_balance_before numeric;
+  v_balance_after  numeric;
+  v_ledger_id      uuid := gen_random_uuid();
+  v_payment_id     uuid := gen_random_uuid();
+BEGIN
+  IF p_idempotency_key IS NOT NULL THEN
+    IF EXISTS (
+      SELECT 1 FROM customer_ledger
+      WHERE reference = p_idempotency_key
+        AND customer_id = p_customer_id
+        AND type = 'payment_received'
+    ) THEN
+      RETURN jsonb_build_object('ok', true, 'duplicate', true);
+    END IF;
+  END IF;
+
+  SELECT COALESCE(balance, 0) INTO v_balance_before
+  FROM customers WHERE id = p_customer_id FOR UPDATE;
+
+  IF NOT FOUND THEN RAISE EXCEPTION 'Customer not found: %', p_customer_id; END IF;
+  IF p_amount <= 0 THEN RAISE EXCEPTION 'Amount must be positive'; END IF;
+
+  v_balance_after := v_balance_before - p_amount;
+
+  INSERT INTO customer_ledger (
+    id, customer_id, sale_id, type,
+    debit, credit, balance_after,
+    reference, note, created_by, created_at
+  ) VALUES (
+    v_ledger_id, p_customer_id, NULL, 'payment_received',
+    0, p_amount, v_balance_after,
+    COALESCE(p_idempotency_key, p_reference), p_note,
+    p_created_by, now()
+  );
+
+  INSERT INTO payments (
+    id, customer_id,
+    payment_type, direction,
+    amount, note,
+    created_at
+  ) VALUES (
+    v_payment_id, p_customer_id,
+    p_payment_mode, 'in',
+    p_amount,
+    COALESCE(p_note, p_reference),
+    now()
+  ) ON CONFLICT DO NOTHING;
+
+  IF p_payment_mode_id IS NOT NULL THEN
+    INSERT INTO payment_movements (
+      id, mode_id, delta, reference_id, note, created_at
+    ) VALUES (
+      v_payment_id, p_payment_mode_id, p_amount,
+      COALESCE(p_idempotency_key, p_reference), p_note, now()
+    ) ON CONFLICT DO NOTHING;
+  END IF;
+
+  RETURN jsonb_build_object(
+    'ok', true,
+    'ledger_id', v_ledger_id,
+    'payment_id', v_payment_id,
+    'balance_before', v_balance_before,
+    'balance_after', v_balance_after
+  );
+END;
+$$;
+GRANT EXECUTE ON FUNCTION receive_customer_payment TO anon, authenticated;
+
+
 DO $$
 BEGIN
   IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
@@ -4020,4 +4155,87 @@ END $$;
 -- GLOBAL GRANTS (Safety Net)
 -- ════════════════════════════════════════════════════════════════
 GRANT ALL ON ALL TABLES IN SCHEMA public TO anon, authenticated, service_role;
+
+CREATE OR REPLACE FUNCTION refund_customer_payment(
+  p_customer_id    uuid,
+  p_amount         numeric,
+  p_payment_mode   text     DEFAULT 'cash',
+  p_payment_mode_id text    DEFAULT NULL,
+  p_reference      text     DEFAULT NULL,
+  p_note           text     DEFAULT NULL,
+  p_created_by     uuid     DEFAULT NULL,
+  p_idempotency_key text    DEFAULT NULL
+)
+RETURNS jsonb
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+  v_balance_before numeric;
+  v_balance_after  numeric;
+  v_ledger_id      uuid := gen_random_uuid();
+  v_payment_id     uuid := gen_random_uuid();
+BEGIN
+  IF p_idempotency_key IS NOT NULL THEN
+    IF EXISTS (
+      SELECT 1 FROM customer_ledger
+      WHERE reference = p_idempotency_key
+        AND customer_id = p_customer_id
+        AND type = 'refund'
+    ) THEN
+      RETURN jsonb_build_object('ok', true, 'duplicate', true);
+    END IF;
+  END IF;
+
+  SELECT COALESCE(balance, 0) INTO v_balance_before
+  FROM customers WHERE id = p_customer_id FOR UPDATE;
+
+  IF NOT FOUND THEN RAISE EXCEPTION 'Customer not found: %', p_customer_id; END IF;
+  IF p_amount <= 0 THEN RAISE EXCEPTION 'Amount must be positive'; END IF;
+
+  v_balance_after := v_balance_before + p_amount;
+
+  INSERT INTO customer_ledger (
+    id, customer_id, sale_id, type,
+    debit, credit, balance_after,
+    reference, note, created_by, created_at
+  ) VALUES (
+    v_ledger_id, p_customer_id, NULL, 'refund',
+    p_amount, 0, v_balance_after,
+    COALESCE(p_idempotency_key, p_reference), p_note,
+    p_created_by, now()
+  );
+
+  INSERT INTO payments (
+    id, customer_id,
+    payment_type, direction,
+    amount, note,
+    created_at
+  ) VALUES (
+    v_payment_id, p_customer_id,
+    p_payment_mode, 'out',
+    p_amount,
+    COALESCE(p_note, p_reference),
+    now()
+  ) ON CONFLICT DO NOTHING;
+
+  IF p_payment_mode_id IS NOT NULL THEN
+    INSERT INTO payment_movements (
+      id, mode_id, delta, reference_id, note, created_at
+    ) VALUES (
+      v_payment_id, p_payment_mode_id, -p_amount,
+      COALESCE(p_idempotency_key, p_reference), p_note, now()
+    ) ON CONFLICT DO NOTHING;
+  END IF;
+
+  RETURN jsonb_build_object(
+    'ok', true,
+    'ledger_id', v_ledger_id,
+    'payment_id', v_payment_id,
+    'balance_before', v_balance_before,
+    'balance_after', v_balance_after
+  );
+END;
+$$;
+GRANT EXECUTE ON FUNCTION refund_customer_payment TO anon, authenticated;
 

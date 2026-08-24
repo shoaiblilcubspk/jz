@@ -33,6 +33,9 @@ export const computeWalletTotals = (
     cash: 0,
     card: 0,
     online: 0,
+    creditReceived: 0,
+    creditGiven: 0,
+    creditRecovered: 0,
   };
 
   filteredTransactions.forEach(t => {
@@ -44,6 +47,9 @@ export const computeWalletTotals = (
       addToWallet('cash', getAmountByMethod(t, 'cash'));
       addToWallet('card', getAmountByMethod(t, 'card'));
       addToWallet('online', getAmountByMethod(t, 'online'));
+      if (t.status !== 'refunded') {
+        totals.creditGiven += getAmountByMethod(t, 'credit');
+      }
     }
 
     if (t.status === 'refunded') {
@@ -74,12 +80,22 @@ export const computeWalletTotals = (
   });
 
   appPayments?.forEach(p => {
-    if (p.direction === 'out') {
-      const pTs = new Date(p.createdAt).getTime();
-      if (pTs >= startTs && pTs <= endTs) {
-        if (p.paymentMethod === 'cash') totals.cash -= Number(p.amount);
-        if (p.paymentMethod === 'card') totals.card -= Number(p.amount);
-        if (p.paymentMethod === 'online') totals.online -= Number(p.amount);
+    const pTs = new Date(p.createdAt || p.created_at || p.timestamp).getTime();
+    if (pTs >= startTs && pTs <= endTs) {
+      const amt = Number(p.amount);
+      const method = (p.paymentMethod || p.paymentType || p.method || 'cash') as 'cash' | 'card' | 'online';
+      
+      if (p.direction === 'in') {
+        if (method === 'cash') totals.cash += amt;
+        if (method === 'card') totals.card += amt;
+        if (method === 'online') totals.online += amt;
+        
+        totals.creditReceived += amt; // legacy tracker
+        totals.creditRecovered += amt; // any incoming payment is a recovery (since payments are against ledger)
+      } else if (p.direction === 'out') {
+        if (method === 'cash') totals.cash -= amt;
+        if (method === 'card') totals.card -= amt;
+        if (method === 'online') totals.online -= amt;
       }
     }
   });

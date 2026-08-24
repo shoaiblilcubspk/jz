@@ -168,6 +168,13 @@ export function useReportFilters(appSettings: any, appSales: any, appExpenses: a
     });
   }, [reportExpenses, selectedCategory, selectedPayment]);
 
+  const filteredPayments = useMemo(() => {
+    return appPayments.filter((p: any) => {
+      const pDate = new Date(p.createdAt || p.created_at || p.timestamp);
+      return pDate >= validStartDate && pDate <= validEndDate;
+    });
+  }, [appPayments, validStartDate, validEndDate]);
+
   return {
     dateRange, setDateRange,
     startDateInput, setStartDateInput,
@@ -181,6 +188,6 @@ export function useReportFilters(appSettings: any, appSales: any, appExpenses: a
     validStartDate, validEndDate,
     isDataLoading,
     reportSales, reportExpenses,
-    filteredSales, filteredExpenses
+    filteredSales, filteredExpenses, filteredPayments
   };
 }

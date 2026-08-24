@@ -15,25 +15,24 @@ interface Props {
   setPageSize: (size: number) => void;
   handleDeleteTransaction: (id: string) => void;
   appSettings: any;
-  t: (key: string, fallback?: string) => string;
 }
 
 export function TransactionList({
   loading, filteredLedger, pageItems, page, totalPages, goToPage,
-  pageSize, setPageSize, handleDeleteTransaction, appSettings, t
+  pageSize, setPageSize, handleDeleteTransaction, appSettings
 }: Props) {
   
   const getBadge = (type: string, sourceType?: string) => {
     if (sourceType === 'auto_purchase') {
-      return { label: t('auto_purchase', 'AUTO-PURCHASE'), tone: 'info' as const, cls: '!bg-blue-500/10 !text-blue-400 !border-blue-500/20' };
+      return { label: 'AUTO-PURCHASE', tone: 'info' as const, cls: '!bg-blue-500/10 !text-blue-400 !border-blue-500/20' };
     }
     switch (type) {
       case 'payment':
-        return { label: t('paid', 'PAID'), tone: 'success' as const, cls: '!bg-primary/10 !text-emerald-400 !border-primary/20' };
+        return { label: 'PAID', tone: 'success' as const, cls: '!bg-primary/10 !text-emerald-400 !border-primary/20' };
       case 'opening_balance':
-        return { label: t('opening_debt', 'OPENING'), tone: 'info' as const, cls: '!bg-violet-500/10 !text-violet-400 !border-violet-500/20' };
+        return { label: 'OPENING', tone: 'info' as const, cls: '!bg-violet-500/10 !text-violet-400 !border-violet-500/20' };
       default:
-        return { label: t('manual_bill', 'MANUAL BILL'), tone: 'danger' as const, cls: '!bg-red-500/10 !text-red-400 !border-red-500/20' };
+        return { label: 'MANUAL BILL', tone: 'danger' as const, cls: '!bg-red-500/10 !text-red-400 !border-red-500/20' };
     }
   };
 
@@ -43,25 +42,25 @@ export function TransactionList({
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="bg-gray-50 dark:bg-white/[0.02]">
-              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest">{t('date', 'Date')}</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest">{t('type', 'Type')}</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest">{t('description', 'Description')}</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest text-right">{t('paid', 'Paid')}</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest text-right">{t('bill', 'Bill')}</th>
-              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest text-center">{t('actions', 'Actions')}</th>
+              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest">{'Date'}</th>
+              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest">{'Type'}</th>
+              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest">{'Description'}</th>
+              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest text-right">{'Paid'}</th>
+              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest text-right">{'Bill'}</th>
+              <th className="px-6 py-4 text-[10px] font-black uppercase text-gray-600 dark:text-gray-400 tracking-widest text-center">{'Actions'}</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-50 dark:divide-white/5">
             {loading ? (
               <tr>
-                <td colSpan={6} className="px-6 py-12 text-center text-gray-600 font-bold italic animate-pulse">{t('loading_ledger_data', 'Loading ledger data...')}</td>
+                <td colSpan={6} className="px-6 py-12 text-center text-gray-600 font-bold italic animate-pulse">{'Loading ledger data...'}</td>
               </tr>
             ) : filteredLedger.length === 0 ? (
               <tr>
                 <td colSpan={6} className="px-6 py-12 text-center">
                   <EmptyState
                     icon={<Clock className="h-10 w-10 text-gray-600 dark:text-gray-500" />}
-                    title={t('no_transactions_yet', 'No transactions yet')}
+                    title={'No transactions yet'}
                     className="py-6"
                   />
                 </td>
@@ -112,11 +111,11 @@ export function TransactionList({
 
       <div className="md:hidden divide-y divide-gray-50 dark:divide-white/5">
         {loading ? (
-          <div className="p-8 text-center text-gray-600 font-bold animate-pulse uppercase text-[10px] tracking-widest">{t('loading_ledger_data', 'Loading transactions...')}</div>
+          <div className="p-8 text-center text-gray-600 font-bold animate-pulse uppercase text-[10px] tracking-widest">{'Loading transactions...'}</div>
         ) : filteredLedger.length === 0 ? (
           <EmptyState
             icon={<Clock className="h-8 w-8 text-gray-600 dark:text-gray-500" />}
-            title={t('no_transactions_yet', 'No entries found')}
+            title={'No entries found'}
             className="p-10"
           />
         ) : (
@@ -140,18 +139,18 @@ export function TransactionList({
 
                 <div className="flex justify-between items-center bg-gray-50 dark:bg-white/5 p-2.5 rounded-xl border border-gray-200 dark:border-white/5">
                   <div className="flex flex-col max-w-[60%]">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-600 mb-0.5">{t('description', 'Description')}</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-600 mb-0.5">{'Description'}</span>
                     <span className="text-[10px] font-bold text-gray-700 dark:text-gray-300 truncate">{tx.detail}</span>
                   </div>
                   <div className="text-right">
                     {tx.type === 'payment' ? (
                       <div className="flex flex-col items-end">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-primary/50 mb-0.5">{t('paid', 'Paid')} (Dr)</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-primary/50 mb-0.5">{'Paid'} (Dr)</span>
                         <span className="text-xs font-black text-primary tracking-tighter">{formatCurrency(tx.debit, appSettings.currency)}</span>
                       </div>
                     ) : (
                       <div className="flex flex-col items-end">
-                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-500/50 mb-0.5">{t('bill', 'Bill')} (Cr)</span>
+                        <span className="text-[9px] font-black uppercase tracking-widest text-rose-500/50 mb-0.5">{'Bill'} (Cr)</span>
                         <span className="text-xs font-black text-rose-500 tracking-tighter">{formatCurrency(tx.credit, appSettings.currency)}</span>
                       </div>
                     )}
@@ -164,7 +163,7 @@ export function TransactionList({
                     onClick={() => handleDeleteTransaction(tx.id)}
                     className="!min-h-0 !bg-rose-500/10 !text-rose-500 hover:!bg-rose-500/10 !px-3 !py-1.5 !rounded-lg !text-[9px] !font-black"
                   >
-                    <Trash2 className="w-3 h-3" /> {t('delete_entry', 'Delete Entry')}
+                    <Trash2 className="w-3 h-3" /> {'Delete Entry'}
                   </Button>
                 </div>
               </div>

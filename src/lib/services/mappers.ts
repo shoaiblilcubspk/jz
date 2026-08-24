@@ -7,3 +7,4 @@ export * from './supplierMappers';
 export * from './expenseMappers';
 export * from './stockMappers';
 export * from './discountMappers';
+export * from './bundleMappers';

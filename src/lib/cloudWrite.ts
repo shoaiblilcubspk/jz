@@ -76,9 +76,13 @@ export async function cloudWrite(
 
   if (entity === 'app_settings' || entity === 'settings') {
     // Only admin/manager may write global settings (matches prior RLS behavior).
-    const profile = await localDb.users.toArray().then(u => u[0]);
-    const role = profile?.role ?? 'cashier';
-    if (!['admin', 'manager'].includes(role)) return;
+    const { data: { session } } = await supabase.auth.getSession();
+    let role = 'cashier';
+    if (session?.user?.id) {
+      const profile = await localDb.users.get(session.user.id);
+      role = profile?.role ?? 'cashier';
+    }
+    if (!['admin', 'manager'].includes(role)) throw new Error('Unauthorized: Only Admin or Manager can update settings');
     const body = await withActor({ ...clean(payload), id: SETTINGS_ID, updated_at: new Date().toISOString() }, 'app_settings');
     const { error } = await supabase.from('app_settings').upsert(body, { onConflict: 'id' });
     if (error) throw error;
@@ -181,7 +185,7 @@ export async function cloudWrite(
 
   if (entity === 'expenses' && opType === 'create') {
     if (payload.p_payment_moves) {
-      const rpcPayload: any = { p_expense: { ...payload }, p_payment_moves: payload.p_payment_moves };
+      const rpcPayload: any = { p_expense: { ...payload }, p_payment_move: payload.p_payment_moves };
       delete rpcPayload.p_expense.p_payment_moves;
       const { error } = await supabase.rpc('commit_expense', rpcPayload);
       if (error && !isDuplicate(error)) throw error;

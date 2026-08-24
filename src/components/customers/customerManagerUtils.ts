@@ -143,13 +143,14 @@ export function computeActiveCustomers(appCustomers: Customer[], country: string
 }
 
 export function getCustomerTotalPurchases(sales: any[], customerId: string, defaultTotal: number | undefined): number {
-  const sum = sales
-    .filter(s => s.customerId === customerId || s.customerName?.toLowerCase() === customerId.toLowerCase())
-    .reduce((acc, s) => acc + getEffectiveTotal(s), 0);
-  return sum || defaultTotal || 0;
+  const customerSales = sales.filter(s => s.customerId === customerId || s.customerName?.toLowerCase() === customerId.toLowerCase());
+  if (customerSales.length > 0) {
+    return customerSales.reduce((acc, s) => acc + getEffectiveTotal(s), 0);
+  }
+  return defaultTotal || 0;
 }
 
 export function computeTotalPurchases(appCustomers: Customer[], dateFilter: string, filteredSalesByDate: any[]): number {
-  if (dateFilter === 'all') return appCustomers.reduce((sum: number, c: Customer) => sum + (c.totalPurchases || 0), 0);
+  if (dateFilter === 'all') return appCustomers.reduce((sum: number, c: Customer) => sum + Math.max(0, c.totalPurchases || 0), 0);
   return filteredSalesByDate.reduce((sum, s) => sum + getEffectiveTotal(s), 0);
 }

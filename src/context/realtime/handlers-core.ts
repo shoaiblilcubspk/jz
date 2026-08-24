@@ -87,7 +87,20 @@ export function attachCoreHandlers(channel: any, ctx: RealtimeCtx) {
             isRealChange = JSON.stringify(localContent) !== JSON.stringify(remoteContent);
           }
           await localDb.appSettings.put(mapped);
-          if (isRealChange) useSettingsStore.getState().setSettings(mapped);
+          if (isRealChange) {
+            try {
+              const localStr = localStorage.getItem('pos_local_prefs');
+              if (localStr) {
+                const local = JSON.parse(localStr);
+                if (local.posGridColumns !== undefined) mapped.posGridColumns = local.posGridColumns;
+                if (local.theme !== undefined) mapped.theme = local.theme;
+                if (local.receiptPrinter !== undefined) mapped.receiptPrinter = local.receiptPrinter;
+                if (local.enableKotPrinter !== undefined) mapped.enableKotPrinter = local.enableKotPrinter;
+                if (local.autoSaveReceiptPng !== undefined) mapped.autoSaveReceiptPng = local.autoSaveReceiptPng;
+              }
+            } catch (e) {}
+            useSettingsStore.getState().setSettings(mapped);
+          }
         }, 2000);
       }
     })

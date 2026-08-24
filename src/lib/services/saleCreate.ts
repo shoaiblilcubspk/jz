@@ -50,7 +50,7 @@ export async function createSale(sale: Omit<Sale, 'id'>): Promise<Sale> {
 
   let customerLedgerPayload: any = null;
   let customerToUpdate: any = null;
-  if (newSale.customerId && !isDraftSale) {
+  if (newSale.customerId && !isDraftSale && newSale.paymentMethod === 'credit') {
     const customer = await localDb.customers.get(newSale.customerId);
     if (customer) {
       customerToUpdate = customer;
@@ -128,38 +128,42 @@ export async function createSale(sale: Omit<Sale, 'id'>): Promise<Sale> {
 
   // Mirror the customer ledger + stats locally. commit_sale already inserted the
   // ledger row and updated the balance server-side; the STATS (totalPurchases /
-  // lastPurchase) are a secondary best-effort push — a failure there must never
-  // fail an already-committed sale.
-  if (customerToUpdate && customerLedgerPayload && !isDraftSale) {
-    const balAfter = customerLedgerPayload.balance_after;
-    const afterCommit = new Date();
-    const updatedCustomer = {
-      ...customerToUpdate,
-      totalPurchases: (customerToUpdate.totalPurchases || 0) + newSale.total,
-      lastPurchase: newSale.timestamp,
-      balance: balAfter,
-      updatedAt: afterCommit
-    };
-    await localDb.customers.put(updatedCustomer);
-    try {
-      await cloudWrite('customers', 'update', customerToUpdate.id, { ...toRemoteCustomer(updatedCustomer), id: customerToUpdate.id }, { batchId: id });
-    } catch (err) {
-      console.warn('[createSale] customer stats push failed (sale already committed):', err);
+  // lastPurchase) are a secondary best-effort push.
+  if (newSale.customerId && !isDraftSale) {
+    const customer = await localDb.customers.get(newSale.customerId);
+    if (customer) {
+      const balAfter = customerLedgerPayload ? customerLedgerPayload.balance_after : customer.balance;
+      const afterCommit = new Date();
+      const updatedCustomer = {
+        ...customer,
+        totalPurchases: (customer.totalPurchases || 0) + newSale.total,
+        lastPurchase: newSale.timestamp,
+        balance: balAfter,
+        updatedAt: afterCommit
+      };
+      await localDb.customers.put(updatedCustomer);
+      try {
+        await cloudWrite('customers', 'update', customer.id, { ...toRemoteCustomer(updatedCustomer), id: customer.id }, { batchId: id });
+      } catch (err) {
+        console.warn('[createSale] customer stats push failed (sale already committed):', err);
+      }
     }
 
-    await localDb.customerLedger.add({
-      id: customerLedgerPayload.id,
-      customerId: customerLedgerPayload.customer_id,
-      saleId: newSale.id,
-      type: 'sale',
-      debit: newSale.total,
-      credit: 0,
-      balanceAfter: balAfter,
-      reference: newSale.invoiceNumber,
-      note: 'Sale',
-      createdBy: actor?.id ?? null,
-      createdAt: now
-    }).catch(() => {});
+    if (customerLedgerPayload) {
+      await localDb.customerLedger.add({
+        id: customerLedgerPayload.id,
+        customerId: customerLedgerPayload.customer_id,
+        saleId: newSale.id,
+        type: 'sale',
+        debit: newSale.total,
+        credit: 0,
+        balanceAfter: customerLedgerPayload.balance_after,
+        reference: newSale.invoiceNumber,
+        note: 'Sale',
+        createdBy: actor?.id ?? null,
+        createdAt: new Date(),
+      }).catch(() => {});
+    }
   }
 
   (newSale as any).wasOversold = anyOversold;

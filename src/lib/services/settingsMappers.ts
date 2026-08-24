@@ -107,6 +107,23 @@ export const mapSettings = (item: any): AppSettings => {
     // RBAC: refund approval threshold (admin override above this amount)
     refundApprovalThreshold: Number(s.refund_approval_threshold ?? s.refundApprovalThreshold ?? 5000),
 
+    // Credit Sales System
+    enableCreditSales: s.enable_credit_sales ?? s.enableCreditSales ?? true,
+    cashierCanCredit: s.cashier_can_credit ?? s.cashierCanCredit ?? true,
+    allowCreditOverLimit: s.allow_credit_over_limit ?? s.allowCreditOverLimit ?? false,
+
+    // Purchase Orders
+    enablePurchaseOrders: s.enable_purchase_orders ?? s.enablePurchaseOrders ?? true,
+
+    // Localization
+    language: s.language ?? 'en',
+
+    // Invoice / PO numbering
+    customReceiptNumber: s.custom_receipt_number ?? s.customReceiptNumber ?? false,
+    poPrefix: s.po_prefix ?? s.poPrefix ?? 'PO',
+    poCounter: s.po_counter ?? s.poCounter ?? 1000,
+
+
     createdAt: s.created_at ? new Date(s.created_at) : (s.createdAt ? new Date(s.createdAt) : new Date()),
     updatedAt: s.updated_at ? new Date(s.updated_at) : (s.updatedAt ? new Date(s.updatedAt) : new Date())
   } as AppSettings;
@@ -205,6 +222,31 @@ export const toRemoteSettings = (s: Partial<AppSettings>) => {
   if ('autoSaveReceiptPng' in s) { remote.auto_save_receipt_png = s.autoSaveReceiptPng; }
   if ('allowNegativeStock' in s) { remote.allow_negative_stock = s.allowNegativeStock; }
   if ('refundApprovalThreshold' in s) { remote.refund_approval_threshold = s.refundApprovalThreshold; }
+
+  // Credit Sales System
+  if ('enableCreditSales' in s) { remote.enable_credit_sales = s.enableCreditSales; }
+  if ('cashierCanCredit' in s) { remote.cashier_can_credit = s.cashierCanCredit; }
+  if ('allowCreditOverLimit' in s) { remote.allow_credit_over_limit = s.allowCreditOverLimit; }
+
+  // Purchase Orders toggle
+  if ('enablePurchaseOrders' in s) { remote.enable_purchase_orders = s.enablePurchaseOrders; }
+
+  // Localization
+  if ('language' in s) { remote.language = s.language; }
+
+  // Invoice / PO numbering
+  if ('customReceiptNumber' in s) { remote.custom_receipt_number = s.customReceiptNumber; }
+  if ('poPrefix' in s) { remote.po_prefix = s.poPrefix; }
+  if ('poCounter' in s) { remote.po_counter = s.poCounter; }
+
+  // Barcode extras
+  if ('barcodeBarWidth' in s) { remote.barcode_bar_width = s.barcodeBarWidth; }
+  if ('barcodeShowBarcode' in s) { remote.barcode_show_barcode = s.barcodeShowBarcode; }
+  if ('barcodeShowQr' in s) { remote.barcode_show_qr = s.barcodeShowQr; }
+  if ('barcodeQrSize' in s) { remote.barcode_qr_size = s.barcodeQrSize; }
+
+  // Receipt barcode toggle
+  if ('receiptShowBarcode' in s) { remote.receipt_show_barcode = s.receiptShowBarcode; }
 
   if ('updatedAt' in s) {
     remote.updated_at = s.updatedAt instanceof Date ? s.updatedAt.toISOString() : s.updatedAt;

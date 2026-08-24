@@ -99,6 +99,28 @@ export interface AppSettings {
   enableCreditSales?: boolean;
   /** RBAC: allow cashier role to create credit sales */
   cashierCanCredit?: boolean;
+  /** Allow sales above customer credit limit */
+  allowCreditOverLimit?: boolean;
+  /** Enable/disable purchase orders module */
+  enablePurchaseOrders?: boolean;
+  /** App language code (e.g. 'en', 'ur') */
+  language?: string;
+  /** Custom receipt number toggle */
+  customReceiptNumber?: boolean;
+  /** Purchase Order prefix */
+  poPrefix?: string;
+  /** Purchase Order counter */
+  poCounter?: number;
+  /** Barcode bar width */
+  barcodeBarWidth?: number;
+  /** Show barcode on barcode label */
+  barcodeShowBarcode?: boolean;
+  /** Show QR code on barcode label */
+  barcodeShowQr?: boolean;
+  /** QR code size on barcode label */
+  barcodeQrSize?: number;
+  /** Show barcode on receipt */
+  receiptShowBarcode?: boolean;
 }
 
 export interface Expense {

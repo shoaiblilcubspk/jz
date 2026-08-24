@@ -82,12 +82,14 @@ FINAL PRODUCTION RBAC + TRANSACTION INTEGRITY IMPLEMENTATION
 > 1. **NEVER** read business data (sales, products, stock) from `localStorage` — always from Zustand store (populated from cloud).
 > 2. **NEVER** save `theme` or `posGridColumns` to Supabase `app_settings`. Device-only prefs.
 > 3. **NEVER** add a new table without ALSO adding it to `useAppLoadData.ts` AND `localDb` cache write.
-> 4. **ALWAYS** `localDb.TABLE.clear()` then `bulkPut()` on startup — prevents stale ghost data from old sessions.
-> 5. **ALWAYS** populate the corresponding Zustand store after fetching from cloud.
-> 6. **Realtime handlers** (`src/context/realtime/handlers-*.ts`) must update BOTH localDb AND Zustand on INSERT/UPDATE/DELETE.
-> 7. `stock_history` and `variant_stock_history` — append-only; never delete from frontend. Only DB triggers write `products.stock`.
-> 8. `sales_tabs` — always filter by `user_id`; never share across users.
-> 9. **New table checklist**: Schema SQL → Migration file → `localDb.ts` table → `useAppLoadData.ts` fetch → localDb persist → Zustand store set → Realtime handler.
+> 4. **ALWAYS** map raw cloud data (snake_case) to application types (camelCase) using `map*` functions (e.g. `mapSettings`, `mapSupplier`) BEFORE inserting into `localDb`. **NEVER insert raw Supabase row objects into Dexie**, as this breaks cross-device syncing and causes missing data fields on refresh.
+> 5. **ALL COLUMNS MUST SYNC:** Ensure every single column in the database schema is accounted for in the `map*` and `toRemote*` functions. No data should be left behind on cloud upload/download.
+> 6. **ALWAYS** `localDb.TABLE.clear()` then `bulkPut()` on startup — prevents stale ghost data from old sessions.
+> 7. **ALWAYS** populate the corresponding Zustand store after fetching from cloud.
+> 8. **Realtime handlers** (`src/context/realtime/handlers-*.ts`) must update BOTH localDb AND Zustand on INSERT/UPDATE/DELETE.
+> 9. `stock_history` and `variant_stock_history` — append-only; never delete from frontend. Only DB triggers write `products.stock`.
+> 10. `sales_tabs` — always filter by `user_id`; never share across users.
+> 11. **New table checklist**: Schema SQL → Migration file → `localDb.ts` table → Mapper functions (`map*`, `toRemote*`) → `useAppLoadData.ts` fetch (with mapper) → localDb persist → Zustand store set → Realtime handler.
 
 
 ============================================================
