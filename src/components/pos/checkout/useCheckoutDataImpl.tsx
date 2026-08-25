@@ -116,7 +116,6 @@ export function useCheckoutData(onClose: () => void, onComplete: (sale: Sale) =>
     if (completedSale || showReceipt) return;
 
     setAmountPaid('');
-    setIsProcessing(false);
     setShowReceipt(false);
     setCompletedSale(null);
     setPaymentMethod('cash');
